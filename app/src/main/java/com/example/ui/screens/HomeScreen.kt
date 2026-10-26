@@ -241,12 +241,16 @@ fun HomeScreen(
     item {
       Card(
         shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(
-          containerColor = GrisesGreenPrimary
-        ),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
         modifier = Modifier
           .fillMaxWidth()
+          .clip(RoundedCornerShape(18.dp))
+          .background(
+            Brush.horizontalGradient(
+              colors = listOf(GrisesGreenPrimary, Color(0xFF059669), Color(0xFF0D9488))
+            )
+          )
           .clickable { onNavigateToTab(4) } // Tab Kas
           .testTag("kas_saldo_card")
       ) {

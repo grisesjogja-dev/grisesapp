@@ -21,13 +21,18 @@ private val DarkColorScheme =
     onSecondary = Color.Black,
     secondaryContainer = GrisesOnGoldContainer,
     onSecondaryContainer = GrisesGoldContainer,
-    tertiary = GrisesTeal,
+    tertiary = GrisesTealLight,
+    onTertiary = Color.Black,
+    tertiaryContainer = GrisesOnTealContainer,
+    onTertiaryContainer = GrisesTealContainer,
     background = GrisesBackgroundDark,
     surface = GrisesSurfaceDark,
     surfaceVariant = GrisesSurfaceVariantDark,
     onBackground = GrisesTextPrimaryDark,
     onSurface = GrisesTextPrimaryDark,
     onSurfaceVariant = GrisesTextSecondaryDark,
+    outline = GrisesGreenPrimaryDark.copy(alpha = 0.4f),
+    outlineVariant = GrisesSurfaceVariantDark
   )
 
 private val LightColorScheme =
@@ -42,18 +47,22 @@ private val LightColorScheme =
     onSecondaryContainer = GrisesOnGoldContainer,
     tertiary = GrisesTeal,
     onTertiary = Color.White,
+    tertiaryContainer = GrisesTealContainer,
+    onTertiaryContainer = GrisesOnTealContainer,
     background = GrisesBackgroundLight,
     surface = GrisesSurfaceLight,
     surfaceVariant = GrisesSurfaceVariantLight,
     onBackground = GrisesTextPrimaryLight,
     onSurface = GrisesTextPrimaryLight,
     onSurfaceVariant = GrisesTextSecondaryLight,
+    outline = Color(0xFFA7F3D0),
+    outlineVariant = Color(0xFFD1FAE5)
   )
 
 @Composable
 fun MyApplicationTheme(
   darkTheme: Boolean = isSystemInDarkTheme(),
-  // Keep intentional branding default
+  // Keep intentional bright branding default
   dynamicColor: Boolean = false,
   content: @Composable () -> Unit,
 ) {
