@@ -1,0 +1,6 @@
+{
+  "name": "GRISES",
+  "description": "Aplikasi Administrasi Paguyuban Perum Griya Sedayu Selaras - Kelola Iuran Warga, Jimpitan Ronda, Agenda, Notifikasi WhatsApp, Inventaris & Buku Kas Transparan",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

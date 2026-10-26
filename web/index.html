@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GRISES - Paguyuban Perum Griya Sedayu Selaras</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            grises: {
+              50: '#f2f9f6',
+              100: '#e1f2eb',
+              500: '#1b6a53',
+              600: '#135542',
+              700: '#0f4c3a',
+              800: '#0b3b2d',
+              900: '#072b21'
+            },
+            gold: {
+              500: '#d48806',
+              600: '#b26b00'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .badge-lunas { background-color: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+    .badge-belum { background-color: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
+    .badge-pending { background-color: #fff3e0; color: #ef6c00; border: 1px solid #ffe0b2; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+
+  <!-- TOP NAVBAR -->
+  <header class="bg-grises-700 text-white shadow-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Logo & Title -->
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('dashboard')">
+          <div class="w-10 h-10 rounded-full bg-emerald-500/30 flex items-center justify-center border border-emerald-400">
+            <i class="fa-solid fa-house-chimney text-emerald-300 text-lg"></i>
+          </div>
+          <div>
+            <h1 class="font-extrabold text-lg sm:text-xl tracking-tight flex items-center gap-2">
+              GRISES
+              <span class="text-xs bg-emerald-500/20 text-emerald-300 font-normal px-2 py-0.5 rounded border border-emerald-400/30">Web Dashboard</span>
+            </h1>
+            <p class="text-xs text-emerald-200">Perum Griya Sedayu Selaras • Guyub & Transparan</p>
+          </div>
+        </div>
+
+        <!-- Mode Admin Switch & Quick Actions -->
+        <div class="flex items-center space-x-3">
+          <div class="flex items-center bg-grises-800 rounded-full p-1 border border-emerald-600/40">
+            <button id="role-admin-btn" onclick="toggleRole(true)" class="px-3 py-1 rounded-full text-xs font-bold transition flex items-center gap-1.5 bg-emerald-600 text-white shadow">
+              <i class="fa-solid fa-user-shield text-xs"></i> Admin
+            </button>
+            <button id="role-warga-btn" onclick="toggleRole(false)" class="px-3 py-1 rounded-full text-xs font-medium text-emerald-200 hover:text-white transition flex items-center gap-1.5">
+              <i class="fa-solid fa-users text-xs"></i> Warga
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- DESKTOP / TABLET NAVIGATION MENU TABS -->
+      <nav class="flex overflow-x-auto space-x-1 py-2 border-t border-emerald-800 text-xs sm:text-sm scrollbar-none">
+        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-tab px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 whitespace-nowrap bg-emerald-800 text-white">
+          <i class="fa-solid fa-chart-pie"></i> Dashboard
+        </button>
+        <button onclick="switchTab('warga')" id="nav-warga" class="nav-tab px-3 py-1.5 rounded-lg font-medium text-emerald-100 hover:bg-emerald-800/60 flex items-center gap-1.5 whitespace-nowrap">
+          <i class="fa-solid fa-address-book"></i> Data Warga (58)
+        </button>
+        <button onclick="switchTab('iuran')" id="nav-iuran" class="nav-tab px-3 py-1.5 rounded-lg font-medium text-emerald-100 hover:bg-emerald-800/60 flex items-center gap-1.5 whitespace-nowrap">
+          <i class="fa-solid fa-file-invoice-dollar"></i> Iuran & WA
+        </button>
+        <button onclick="switchTab('jimpitan')" id="nav-jimpitan" class="nav-tab px-3 py-1.5 rounded-lg font-medium text-emerald-100 hover:bg-emerald-800/60 flex items-center gap-1.5 whitespace-nowrap">
+          <i class="fa-solid fa-coins"></i> Jimpitan Ronda
+        </button>
+        <button onclick="switchTab('kas')" id="nav-kas" class="nav-tab px-3 py-1.5 rounded-lg font-medium text-emerald-100 hover:bg-emerald-800/60 flex items-center gap-1.5 whitespace-nowrap">
+          <i class="fa-solid fa-scale-balanced"></i> Buku Kas
+        </button>
+        <button onclick="switchTab('inventaris')" id="nav-inventaris" class="nav-tab px-3 py-1.5 rounded-lg font-medium text-emerald-100 hover:bg-emerald-800/60 flex items-center gap-1.5 whitespace-nowrap">
+          <i class="fa-solid fa-boxes-stacked"></i> Inventaris
+        </button>
+        <button onclick="switchTab('agenda')" id="nav-agenda" class="nav-tab px-3 py-1.5 rounded-lg font-medium text-emerald-100 hover:bg-emerald-800/60 flex items-center gap-1.5 whitespace-nowrap">
+          <i class="fa-solid fa-calendar-days"></i> Agenda
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+    <!-- TAB 1: DASHBOARD -->
+    <section id="tab-dashboard" class="tab-content active space-y-6">
+      <!-- Admin Mode Banner -->
+      <div id="admin-indicator-banner" class="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 flex items-center justify-between text-xs sm:text-sm">
+        <div class="flex items-center gap-2.5">
+          <span class="w-8 h-8 rounded-full bg-grises-700 text-white flex items-center justify-center">
+            <i class="fa-solid fa-shield-halved"></i>
+          </span>
+          <div>
+            <p class="font-bold text-grises-800" id="role-title">Mode Pengurus Aktif (Admin)</p>
+            <p class="text-xs text-gray-500" id="role-desc">Anda memiliki izin penuh untuk mencatat iuran, jimpitan harian, transaksi kas, dan edit warga.</p>
+          </div>
+        </div>
+        <button onclick="syncOfficialDataPrompt()" class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-3 py-1 rounded-lg text-xs font-semibold shadow-sm flex items-center gap-1.5">
+          <i class="fa-solid fa-rotate text-emerald-600"></i> Sync PDF Checklist
+        </button>
+      </div>
+
+      <!-- Quick Stats Top 4 Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Saldo Kas Card -->
+        <div class="bg-gradient-to-br from-grises-700 to-grises-800 text-white rounded-2xl p-5 shadow-sm border border-emerald-800">
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-bold text-emerald-200 uppercase tracking-wider">Saldo Kas Paguyuban</span>
+            <span class="bg-emerald-500/20 text-emerald-200 text-xs px-2 py-0.5 rounded-full font-bold">Transparan</span>
+          </div>
+          <h2 class="text-2xl font-black mt-2 text-white" id="stat-saldo-kas">Rp 0</h2>
+          <div class="mt-4 pt-3 border-t border-emerald-600/30 flex justify-between text-xs">
+            <div>
+              <span class="text-emerald-300 block">Masuk:</span>
+              <span class="font-bold text-white" id="stat-kas-masuk">Rp 0</span>
+            </div>
+            <div class="text-right">
+              <span class="text-rose-300 block">Keluar:</span>
+              <span class="font-bold text-white" id="stat-kas-keluar">Rp 0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Jimpitan Hari Ini -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200">
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Jimpitan Ronda Malam</span>
+            <span class="bg-amber-100 text-amber-800 text-xs px-2 py-0.5 rounded-full font-bold">Rp 500 / Rumah</span>
+          </div>
+          <h2 class="text-2xl font-black mt-2 text-gray-900" id="stat-jimpitan-today">Rp 0</h2>
+          <p class="text-xs text-emerald-600 font-semibold mt-1" id="stat-jimpitan-houses">0 Rumah Berpartisipasi</p>
+          <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between text-xs text-gray-500">
+            <span>Bulan Ini: <strong id="stat-jimpitan-month" class="text-gray-800">Rp 0</strong></span>
+            <button onclick="switchTab('jimpitan')" class="text-grises-700 font-bold hover:underline">Input &rarr;</button>
+          </div>
+        </div>
+
+        <!-- Iuran Bulanan -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200">
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Iuran Bulan Berjalan</span>
+            <span class="bg-emerald-100 text-emerald-800 text-xs px-2 py-0.5 rounded-full font-bold" id="stat-iuran-percent">0%</span>
+          </div>
+          <h2 class="text-2xl font-black mt-2 text-gray-900" id="stat-iuran-paid-count">0 / 58 Lunas</h2>
+          <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+            <div id="stat-iuran-progress" class="bg-emerald-600 h-2 rounded-full" style="width: 0%"></div>
+          </div>
+          <div class="mt-3 flex justify-between text-xs text-gray-500">
+            <span>Terkumpul: <strong id="stat-iuran-amount" class="text-emerald-700">Rp 0</strong></span>
+            <button onclick="switchTab('iuran')" class="text-grises-700 font-bold hover:underline">Kelola &rarr;</button>
+          </div>
+        </div>
+
+        <!-- Data Warga (PDF 58 Rumah) -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200">
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Data Rumah GSS</span>
+            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full font-bold">Checklist PDF</span>
+          </div>
+          <h2 class="text-2xl font-black mt-2 text-gray-900">58 Unit Rumah</h2>
+          <div class="mt-2 text-xs space-y-0.5">
+            <p class="text-emerald-700 font-semibold"><i class="fa-solid fa-circle-check text-[10px]"></i> <span id="stat-warga-dihuni">39</span> Dihuni (36 Pemilik, 3 Kontrak)</p>
+            <p class="text-amber-700 font-medium"><i class="fa-solid fa-house-chimney-crack text-[10px]"></i> <span id="stat-warga-kosong">19</span> Kosong (10 Bayar Iuran)</p>
+          </div>
+          <div class="mt-2 pt-2 border-t border-gray-100 text-right">
+            <button onclick="switchTab('warga')" class="text-xs text-grises-700 font-bold hover:underline">Lihat Semua &rarr;</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Action Grid -->
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+        <h3 class="font-bold text-gray-900 text-base mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-bolt text-amber-500"></i> Aksi Cepat Administrasi
+        </h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+          <button onclick="switchTab('iuran')" class="p-3.5 rounded-xl border border-gray-200 hover:border-emerald-500 hover:bg-emerald-50/50 transition flex flex-col items-center text-center">
+            <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mb-2">
+              <i class="fa-brands fa-whatsapp text-xl"></i>
+            </div>
+            <span class="font-bold text-xs text-gray-800">Tagihan WA</span>
+            <span class="text-[10px] text-gray-500">Kirim notifikasi</span>
+          </button>
+
+          <button onclick="switchTab('jimpitan')" class="p-3.5 rounded-xl border border-gray-200 hover:border-amber-500 hover:bg-amber-50/50 transition flex flex-col items-center text-center">
+            <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center mb-2">
+              <i class="fa-solid fa-coins text-lg"></i>
+            </div>
+            <span class="font-bold text-xs text-gray-800">Input Jimpitan</span>
+            <span class="text-[10px] text-gray-500">Rp 500/rumah</span>
+          </button>
+
+          <button onclick="switchTab('kas'); openModalAddKas()" class="p-3.5 rounded-xl border border-gray-200 hover:border-blue-500 hover:bg-blue-50/50 transition flex flex-col items-center text-center">
+            <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center mb-2">
+              <i class="fa-solid fa-wallet text-lg"></i>
+            </div>
+            <span class="font-bold text-xs text-gray-800">Catat Kas</span>
+            <span class="text-[10px] text-gray-500">Masuk & keluar</span>
+          </button>
+
+          <button onclick="switchTab('warga'); openModalAddWarga()" class="p-3.5 rounded-xl border border-gray-200 hover:border-purple-500 hover:bg-purple-50/50 transition flex flex-col items-center text-center">
+            <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center mb-2">
+              <i class="fa-solid fa-user-plus text-lg"></i>
+            </div>
+            <span class="font-bold text-xs text-gray-800">Tambah Warga</span>
+            <span class="text-[10px] text-gray-500">Khusus admin</span>
+          </button>
+
+          <button onclick="switchTab('inventaris')" class="p-3.5 rounded-xl border border-gray-200 hover:border-teal-500 hover:bg-teal-50/50 transition flex flex-col items-center text-center">
+            <div class="w-10 h-10 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center mb-2">
+              <i class="fa-solid fa-boxes-stacked text-lg"></i>
+            </div>
+            <span class="font-bold text-xs text-gray-800">Pinjam Aset</span>
+            <span class="text-[10px] text-gray-500">Tenda, kursi, sound</span>
+          </button>
+
+          <button onclick="switchTab('agenda')" class="p-3.5 rounded-xl border border-gray-200 hover:border-rose-500 hover:bg-rose-50/50 transition flex flex-col items-center text-center">
+            <div class="w-10 h-10 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center mb-2">
+              <i class="fa-solid fa-calendar-check text-lg"></i>
+            </div>
+            <span class="font-bold text-xs text-gray-800">Agenda Warga</span>
+            <span class="text-[10px] text-gray-500">Kerja bakti & rapat</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Agenda Terdekat & Kas Terbaru Row -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Kas Terbaru -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="font-bold text-gray-900 text-sm flex items-center gap-2">
+              <i class="fa-solid fa-receipt text-grises-700"></i> Mutasi Kas Terbaru
+            </h3>
+            <button onclick="switchTab('kas')" class="text-xs text-emerald-700 font-bold hover:underline">Lihat Buku Kas &rarr;</button>
+          </div>
+          <div id="dashboard-recent-kas" class="space-y-2 text-xs">
+            <!-- Loaded via JS -->
+          </div>
+        </div>
+
+        <!-- Agenda Terdekat -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="font-bold text-gray-900 text-sm flex items-center gap-2">
+              <i class="fa-solid fa-calendar-days text-grises-700"></i> Agenda Kegiatan Terdekat
+            </h3>
+            <button onclick="switchTab('agenda')" class="text-xs text-emerald-700 font-bold hover:underline">Semua Agenda &rarr;</button>
+          </div>
+          <div id="dashboard-recent-agenda" class="space-y-2 text-xs">
+            <!-- Loaded via JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: DATA WARGA (58 RESMI DOKUMEN CHECKLIST) -->
+    <section id="tab-warga" class="tab-content space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-gray-200">
+        <div>
+          <h2 class="text-lg font-bold text-gray-900">Data Warga & Rumah Perum Griya Sedayu Selaras</h2>
+          <p class="text-xs text-gray-500">Sesuai Dokumen Checklist Resmi: 58 Unit Rumah (Blok A, B, C)</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="syncOfficialDataPrompt()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5">
+            <i class="fa-solid fa-arrows-rotate"></i> Reset Data PDF
+          </button>
+          <button onclick="openModalAddWarga()" class="admin-only bg-grises-700 hover:bg-grises-800 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold shadow-sm flex items-center gap-1.5">
+            <i class="fa-solid fa-plus"></i> Tambah Warga
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter & Search Toolbar -->
+      <div class="bg-white p-4 rounded-2xl border border-gray-200 flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between text-xs">
+        <div class="flex-1 relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-gray-400"></i>
+          <input type="text" id="warga-search" oninput="renderWargaTable()" placeholder="Cari nama warga, blok (A/B/C), no rumah, status..." class="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none text-xs">
+        </div>
+
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
+          <!-- Blok Selector -->
+          <select id="warga-filter-blok" onchange="renderWargaTable()" class="border border-gray-300 rounded-xl px-3 py-2 bg-white text-xs outline-none">
+            <option value="Semua">Semua Blok (58)</option>
+            <option value="A">Blok A (16)</option>
+            <option value="B">Blok B (27)</option>
+            <option value="C">Blok C (15)</option>
+          </select>
+
+          <!-- Status Selector -->
+          <select id="warga-filter-status" onchange="renderWargaTable()" class="border border-gray-300 rounded-xl px-3 py-2 bg-white text-xs outline-none">
+            <option value="Semua">Semua Status</option>
+            <option value="DI HUNI PEMILIK">Di Huni Pemilik (36)</option>
+            <option value="DI HUNI KONTRAK">Di Huni Kontrak (3)</option>
+            <option value="KOSONG (MEMBAYAR IURAN)">Kosong Membayar Iuran (10)</option>
+            <option value="KOSONG (ADA PEMILIK)">Kosong Ada Pemilik (8)</option>
+            <option value="BELUM ADA PEMILIK">Belum Ada Pemilik (1)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Warga Table -->
+      <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-gray-100/80 text-gray-600 font-bold border-b border-gray-200">
+                <th class="py-3 px-4 w-12 text-center">No</th>
+                <th class="py-3 px-4 w-28">Blok / Rumah</th>
+                <th class="py-3 px-4">Nama Warga / Pemilik</th>
+                <th class="py-3 px-4">Status Rumah (Checklist)</th>
+                <th class="py-3 px-4">Kontak WhatsApp</th>
+                <th class="py-3 px-4 text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="warga-tbody" class="divide-y divide-gray-100">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: IURAN & NOTIFIKASI WA -->
+    <section id="tab-iuran" class="tab-content space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-gray-200">
+        <div>
+          <h2 class="text-lg font-bold text-gray-900">Pengelolaan Iuran Warga & Tagihan WhatsApp</h2>
+          <p class="text-xs text-gray-500">Iuran Keamanan & Lingkungan (Rp 50.000) + Pengelolaan Sampah (Rp 15.000) = Rp 65.000</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="broadcastTagihanGrupWA()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold shadow-sm flex items-center gap-1.5">
+            <i class="fa-brands fa-whatsapp text-sm"></i> Broadcast Tagihan ke Grup WA
+          </button>
+        </div>
+      </div>
+
+      <!-- Iuran Filter Bar -->
+      <div class="bg-white p-4 rounded-2xl border border-gray-200 flex flex-wrap gap-3 items-center justify-between text-xs">
+        <div class="flex items-center gap-2">
+          <span class="font-semibold text-gray-600">Periode:</span>
+          <select id="iuran-filter-bulan" onchange="renderIuranTable()" class="border border-gray-300 rounded-lg px-2.5 py-1.5 bg-white text-xs">
+            <option value="1">Januari</option>
+            <option value="2">Februari</option>
+            <option value="3">Maret</option>
+            <option value="4">April</option>
+            <option value="5">Mei</option>
+            <option value="6">Juni</option>
+            <option value="7">Juli</option>
+            <option value="8">Agustus</option>
+            <option value="9">September</option>
+            <option value="10" selected>Oktober</option>
+            <option value="11">November</option>
+            <option value="12">Desember</option>
+          </select>
+          <select id="iuran-filter-tahun" onchange="renderIuranTable()" class="border border-gray-300 rounded-lg px-2.5 py-1.5 bg-white text-xs">
+            <option value="2026" selected>2026</option>
+            <option value="2025">2025</option>
+          </select>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="setIuranFilter('Semua')" id="btn-filter-iuran-all" class="px-3 py-1 rounded-full text-xs font-bold bg-grises-700 text-white">Semua</button>
+          <button onclick="setIuranFilter('BELUM')" id="btn-filter-iuran-belum" class="px-3 py-1 rounded-full text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200">Belum Lunas</button>
+          <button onclick="setIuranFilter('LUNAS')" id="btn-filter-iuran-lunas" class="px-3 py-1 rounded-full text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200">Lunas</button>
+        </div>
+      </div>
+
+      <!-- Iuran Table -->
+      <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-gray-100/80 text-gray-600 font-bold border-b border-gray-200">
+                <th class="py-3 px-4 w-12 text-center">No</th>
+                <th class="py-3 px-4">Rumah & Nama Warga</th>
+                <th class="py-3 px-4">Rincian Tagihan</th>
+                <th class="py-3 px-4">Status</th>
+                <th class="py-3 px-4">Metode / Tanggal</th>
+                <th class="py-3 px-4 text-center">Aksi Notifikasi & Pembayaran</th>
+              </tr>
+            </thead>
+            <tbody id="iuran-tbody" class="divide-y divide-gray-100">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: JIMPITAN RONDA (RP 500 / RUMAH / HARI) -->
+    <section id="tab-jimpitan" class="tab-content space-y-4">
+      <div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white p-5 rounded-2xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-extrabold flex items-center gap-2">
+            <i class="fa-solid fa-moon"></i> Jimpitan Ronda Malam
+          </h2>
+          <p class="text-xs text-amber-100 mt-1">Tarif resmi Paguyuban: <strong>Rp 500 / rumah / hari</strong> di kaleng jimpitan depan rumah warga</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="ambilSemuaJimpitan()" class="admin-only bg-white text-amber-800 hover:bg-amber-50 px-3.5 py-1.5 rounded-lg text-xs font-bold shadow-sm flex items-center gap-1.5">
+            <i class="fa-solid fa-check-double"></i> Ambil Semua (Rp 500)
+          </button>
+          <button onclick="setorJimpitanKeKas()" class="admin-only bg-amber-900 text-white hover:bg-amber-950 px-3.5 py-1.5 rounded-lg text-xs font-bold shadow-sm flex items-center gap-1.5">
+            <i class="fa-solid fa-vault"></i> Setor ke Kas Paguyuban
+          </button>
+        </div>
+      </div>
+
+      <!-- Realtime Jimpitan Summary Stats -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-white p-4 rounded-xl border border-gray-200">
+          <span class="text-xs text-gray-500 font-medium">Terkumpul Hari Ini:</span>
+          <h3 class="text-xl font-extrabold text-emerald-700 mt-1" id="jimpitan-sum-today">Rp 0</h3>
+          <span class="text-[11px] text-gray-400" id="jimpitan-sum-houses">0 Rumah berpartisipasi</span>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-gray-200">
+          <span class="text-xs text-gray-500 font-medium">Akumulasi Bulan Ini:</span>
+          <h3 class="text-xl font-extrabold text-amber-700 mt-1" id="jimpitan-sum-month">Rp 0</h3>
+          <span class="text-[11px] text-gray-400">Total koin jimpitan terkumpul</span>
+        </div>
+        <div class="bg-white p-4 rounded-xl border border-gray-200">
+          <span class="text-xs text-gray-500 font-medium">Belum Disetor ke Kas:</span>
+          <h3 class="text-xl font-extrabold text-rose-700 mt-1" id="jimpitan-sum-unbanked">Rp 0</h3>
+          <span class="text-[11px] text-gray-400">Siap dipindahkan ke Buku Kas Masuk</span>
+        </div>
+      </div>
+
+      <!-- Date selector -->
+      <div class="bg-white p-3.5 rounded-xl border border-gray-200 flex items-center justify-between text-xs">
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-gray-700">Pilih Tanggal:</span>
+          <input type="date" id="jimpitan-date-picker" onchange="renderJimpitanGrid()" class="border border-gray-300 rounded-lg px-2.5 py-1 text-xs">
+        </div>
+        <span class="text-xs text-gray-500">Klik pada kartu rumah untuk toggle penarikan Rp 500</span>
+      </div>
+
+      <!-- Grid of houses for Jimpitan -->
+      <div id="jimpitan-houses-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5">
+        <!-- Rendered via JS -->
+      </div>
+    </section>
+
+    <!-- TAB 5: BUKU KAS MASUK - KELUAR -->
+    <section id="tab-kas" class="tab-content space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-gray-200">
+        <div>
+          <h2 class="text-lg font-bold text-gray-900">Buku Kas Paguyuban (Transparansi Akuntabel)</h2>
+          <p class="text-xs text-gray-500">Laporan pemasukan dan pengeluaran dana warga Griya Sedayu Selaras secara terbuka</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="exportKasToCSV()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5">
+            <i class="fa-solid fa-file-excel text-emerald-600"></i> Export Excel/CSV
+          </button>
+          <button onclick="openModalAddKas()" class="admin-only bg-grises-700 hover:bg-grises-800 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold shadow-sm flex items-center gap-1.5">
+            <i class="fa-solid fa-plus"></i> Catat Transaksi Kas
+          </button>
+        </div>
+      </div>
+
+      <!-- Kas Balance Big Banner -->
+      <div class="bg-grises-700 text-white p-6 rounded-2xl shadow-sm border border-emerald-800 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div>
+          <span class="text-xs text-emerald-200 font-semibold uppercase tracking-wider">Saldo Kas Berjalan</span>
+          <h2 class="text-3xl sm:text-4xl font-black text-white mt-1" id="kas-page-saldo">Rp 0</h2>
+          <p class="text-xs text-emerald-300 mt-1">Pembukuan Real-Time Paguyuban Perum Griya Sedayu Selaras</p>
+        </div>
+        <div class="flex gap-4 w-full md:w-auto">
+          <div class="flex-1 md:flex-none bg-emerald-800/80 px-4 py-3 rounded-xl border border-emerald-600/40">
+            <span class="text-xs text-emerald-300 block">Total Pemasukan (+)</span>
+            <span class="text-base sm:text-lg font-bold text-white" id="kas-page-masuk">Rp 0</span>
+          </div>
+          <div class="flex-1 md:flex-none bg-emerald-800/80 px-4 py-3 rounded-xl border border-emerald-600/40">
+            <span class="text-xs text-rose-300 block">Total Pengeluaran (-)</span>
+            <span class="text-base sm:text-lg font-bold text-white" id="kas-page-keluar">Rp 0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kas Filter & Table -->
+      <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+        <div class="p-3.5 border-b border-gray-200 flex flex-wrap gap-2 items-center justify-between text-xs">
+          <div class="flex items-center gap-2">
+            <button onclick="setKasFilter('Semua')" id="btn-filter-kas-all" class="px-3 py-1 rounded-full text-xs font-bold bg-grises-700 text-white">Semua</button>
+            <button onclick="setKasFilter('MASUK')" id="btn-filter-kas-in" class="px-3 py-1 rounded-full text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200">Pemasukan (+)</button>
+            <button onclick="setKasFilter('KELUAR')" id="btn-filter-kas-out" class="px-3 py-1 rounded-full text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200">Pengeluaran (-)</button>
+          </div>
+          <input type="text" id="kas-search" oninput="renderKasTable()" placeholder="Cari keterangan, bukti, kategori..." class="border border-gray-300 rounded-lg px-3 py-1.5 text-xs outline-none">
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-gray-100/80 text-gray-600 font-bold border-b border-gray-200">
+                <th class="py-3 px-4 w-28">Tanggal</th>
+                <th class="py-3 px-4 w-20">Tipe</th>
+                <th class="py-3 px-4">Kategori & Keterangan</th>
+                <th class="py-3 px-4">Pencatat / No. Bukti</th>
+                <th class="py-3 px-4 text-right">Nominal (Rp)</th>
+                <th class="py-3 px-4 w-16 text-center admin-only">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="kas-tbody" class="divide-y divide-gray-100">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 6: INVENTARISASI PERUMAHAN -->
+    <section id="tab-inventaris" class="tab-content space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-gray-200">
+        <div>
+          <h2 class="text-lg font-bold text-gray-900">Inventarisasi Aset Paguyuban</h2>
+          <p class="text-xs text-gray-500">Katalog barang fasilitas bersama Perum Griya Sedayu Selaras</p>
+        </div>
+        <button onclick="openModalAddInventaris()" class="admin-only bg-grises-700 hover:bg-grises-800 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold shadow-sm flex items-center gap-1.5">
+          <i class="fa-solid fa-plus"></i> Tambah Aset
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="inventaris-cards-grid">
+        <!-- Rendered via JS -->
+      </div>
+    </section>
+
+    <!-- TAB 7: AGENDA KEGIATAN -->
+    <section id="tab-agenda" class="tab-content space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-gray-200">
+        <div>
+          <h2 class="text-lg font-bold text-gray-900">Agenda Kegiatan Paguyuban</h2>
+          <p class="text-xs text-gray-500">Transparansi kerja bakti, pertemuan rutin, arisan & jadwal ronda malam</p>
+        </div>
+        <button onclick="openModalAddAgenda()" class="admin-only bg-grises-700 hover:bg-grises-800 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold shadow-sm flex items-center gap-1.5">
+          <i class="fa-solid fa-plus"></i> Tambah Agenda
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="agenda-cards-grid">
+        <!-- Rendered via JS -->
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-white border-t border-gray-200 mt-12 py-6 text-center text-xs text-gray-500">
+    <p class="font-semibold text-gray-700">GRISES &copy; 2026 • Paguyuban Perum Griya Sedayu Selaras</p>
+    <p class="mt-1">Sistem Administrasi, Jimpitan Ronda, Inventaris & Kas Transparan Terintegrasi WhatsApp</p>
+  </footer>
+
+  <!-- MODAL: TAMBAH / EDIT WARGA -->
+  <div id="modal-warga" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-bold text-gray-900 text-base" id="modal-warga-title">Tambah Data Warga Baru</h3>
+        <button onclick="closeModal('modal-warga')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <form id="form-warga" onsubmit="saveWarga(event)" class="space-y-3 text-xs">
+        <input type="hidden" id="warga-id">
+        <div>
+          <label class="block font-semibold mb-1">Nama Warga / Pemilik*</label>
+          <input type="text" id="form-warga-nama" required class="w-full border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-500">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-semibold mb-1">Blok (A / B / C)*</label>
+            <input type="text" id="form-warga-blok" required class="w-full border rounded-lg px-3 py-2 uppercase outline-none focus:ring-2 focus:ring-emerald-500">
+          </div>
+          <div>
+            <label class="block font-semibold mb-1">No. Rumah (e.g. 01)*</label>
+            <input type="text" id="form-warga-norumah" required class="w-full border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-500">
+          </div>
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Status Rumah (Sesuai Checklist)*</label>
+          <select id="form-warga-status" class="w-full border rounded-lg px-3 py-2 bg-white outline-none">
+            <option value="DI HUNI PEMILIK">DI HUNI PEMILIK</option>
+            <option value="DI HUNI KONTRAK">DI HUNI KONTRAK</option>
+            <option value="KOSONG (MEMBAYAR IURAN)">KOSONG (MEMBAYAR IURAN)</option>
+            <option value="KOSONG (ADA PEMILIK)">KOSONG (ADA PEMILIK)</option>
+            <option value="BELUM ADA PEMILIK">BELUM ADA PEMILIK</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">No. WhatsApp (e.g. 08123456789)</label>
+          <input type="text" id="form-warga-hp" class="w-full border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-500">
+        </div>
+        <div class="flex justify-end gap-2 pt-3 border-t">
+          <button type="button" onclick="closeModal('modal-warga')" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg font-semibold text-gray-700">Batal</button>
+          <button type="submit" class="px-4 py-2 bg-grises-700 hover:bg-grises-800 text-white rounded-lg font-bold">Simpan Warga</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CATAT KAS -->
+  <div id="modal-kas" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-bold text-gray-900 text-base">Catat Transaksi Kas Baru</h3>
+        <button onclick="closeModal('modal-kas')" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <form id="form-kas" onsubmit="saveKas(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-semibold mb-1">Tipe Transaksi*</label>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="border p-2 rounded-lg flex items-center justify-center gap-2 cursor-pointer has-[:checked]:bg-emerald-50 has-[:checked]:border-emerald-600">
+              <input type="radio" name="kas_tipe" value="MASUK" checked>
+              <span class="font-bold text-emerald-800">Kas Masuk (+)</span>
+            </label>
+            <label class="border p-2 rounded-lg flex items-center justify-center gap-2 cursor-pointer has-[:checked]:bg-rose-50 has-[:checked]:border-rose-600">
+              <input type="radio" name="kas_tipe" value="KELUAR">
+              <span class="font-bold text-rose-800">Kas Keluar (-)</span>
+            </label>
+          </div>
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Kategori*</label>
+          <select id="form-kas-kategori" class="w-full border rounded-lg px-3 py-2 bg-white outline-none">
+            <option value="Iuran Warga">Iuran Warga</option>
+            <option value="Jimpitan Ronda">Jimpitan Ronda</option>
+            <option value="Donasi Warga">Donasi Warga</option>
+            <option value="Keamanan & Satpam">Keamanan & Satpam</option>
+            <option value="Kebersihan & Sampah">Kebersihan & Sampah</option>
+            <option value="Perbaikan Fasum">Perbaikan Fasum</option>
+            <option value="Konsumsi Pertemuan">Konsumsi Pertemuan</option>
+            <option value="Sosial & Santunan">Sosial & Santunan</option>
+            <option value="Pembelian Inventaris">Pembelian Inventaris</option>
+            <option value="Lainnya">Lainnya</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Jumlah Nominal (Rupiah)*</label>
+          <input type="number" id="form-kas-nominal" required placeholder="Contoh: 150000" class="w-full border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-500">
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Keterangan Transaksi*</label>
+          <input type="text" id="form-kas-keterangan" required placeholder="Contoh: Beli bohlam lampu jalan Blok B" class="w-full border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-500">
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Penanggung Jawab / Pencatat</label>
+          <input type="text" id="form-kas-pencatat" value="Bendahara Paguyuban" class="w-full border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-emerald-500">
+        </div>
+        <div class="flex justify-end gap-2 pt-3 border-t">
+          <button type="button" onclick="closeModal('modal-kas')" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg font-semibold text-gray-700">Batal</button>
+          <button type="submit" class="px-4 py-2 bg-grises-700 hover:bg-grises-800 text-white rounded-lg font-bold">Simpan Kas</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT APPLICATION LOGIC -->
+  <script>
+    // DATA RESMI 58 WARGA DARI DOKUMEN CHECKLIST PDF
+    const DEFAULT_58_WARGA = [
+      { no: 1, nama: "DESTI", blok: "A", noRumah: "01", statusRumah: "DI HUNI PEMILIK" },
+      { no: 2, nama: "AGUS", blok: "A", noRumah: "02", statusRumah: "KOSONG (MEMBAYAR IURAN)" },
+      { no: 3, nama: "DANANG", blok: "A", noRumah: "03", statusRumah: "DI HUNI PEMILIK" },
+      { no: 4, nama: "NANDO", blok: "A", noRumah: "04", statusRumah: "DI HUNI PEMILIK" },
+      { no: 5, nama: "DWI", blok: "A", noRumah: "05", statusRumah: "KOSONG (ADA PEMILIK)" },
+      { no: 6, nama: "HANTORO", blok: "A", noRumah: "06", statusRumah: "DI HUNI KONTRAK" },
+      { no: 7, nama: "ANGGO", blok: "A", noRumah: "07", statusRumah: "KOSONG (ADA PEMILIK)" },
+      { no: 8, nama: "IRVAN", blok: "A", noRumah: "08", statusRumah: "DI HUNI PEMILIK" },
+      { no: 9, nama: "TRI S", blok: "A", noRumah: "09", statusRumah: "DI HUNI PEMILIK" },
+      { no: 10, nama: "ILHAM", blok: "A", noRumah: "10", statusRumah: "DI HUNI PEMILIK" },
+      { no: 11, nama: "CATUR", blok: "A", noRumah: "11", statusRumah: "DI HUNI PEMILIK" },
+      { no: 12, nama: "IDHAM", blok: "A", noRumah: "12", statusRumah: "KOSONG (MEMBAYAR IURAN)" },
+      { no: 13, nama: "WALUYO", blok: "A", noRumah: "13", statusRumah: "DI HUNI PEMILIK" },
+      { no: 14, nama: "OCHIN/ TONO", blok: "A", noRumah: "14", statusRumah: "DI HUNI KONTRAK" },
+      { no: 15, nama: "FAJAR", blok: "A", noRumah: "15", statusRumah: "DI HUNI PEMILIK" },
+      { no: 16, nama: "EDI", blok: "A", noRumah: "16", statusRumah: "KOSONG (MEMBAYAR IURAN)" },
+
+      { no: 17, nama: "GALIH", blok: "B", noRumah: "01", statusRumah: "KOSONG (MEMBAYAR IURAN)" },
+      { no: 18, nama: "AHMAD 2", blok: "B", noRumah: "02", statusRumah: "DI HUNI PEMILIK" },
+      { no: 19, nama: "WIBI", blok: "B", noRumah: "03", statusRumah: "KOSONG (ADA PEMILIK)" },
+      { no: 20, nama: "FIRMAN", blok: "B", noRumah: "04", statusRumah: "DI HUNI KONTRAK" },
+      { no: 21, nama: "ANDRE", blok: "B", noRumah: "05", statusRumah: "KOSONG (MEMBAYAR IURAN)" },
+      { no: 22, nama: "RATNA/FITRAH", blok: "B", noRumah: "06", statusRumah: "DI HUNI PEMILIK" },
+      { no: 23, nama: "ANANG", blok: "B", noRumah: "07", statusRumah: "DI HUNI PEMILIK" },
+      { no: 24, nama: "ASROFI", blok: "B", noRumah: "08", statusRumah: "DI HUNI PEMILIK" },
+      { no: 25, nama: "DANANG SUNYOTO", blok: "B", noRumah: "09", statusRumah: "KOSONG (ADA PEMILIK)" },
+      { no: 26, nama: "ELVIRA", blok: "B", noRumah: "10", statusRumah: "KOSONG (ADA PEMILIK)" },
+      { no: 27, nama: "RIMBA", blok: "B", noRumah: "11", statusRumah: "KOSONG (ADA PEMILIK)" },
+      { no: 28, nama: "RESKY", blok: "B", noRumah: "12", statusRumah: "KOSONG (MEMBAYAR IURAN)" },
+      { no: 29, nama: "GALIH", blok: "B", noRumah: "13", statusRumah: "DI HUNI PEMILIK" },
+      { no: 30, nama: "SUNTI", blok: "B", noRumah: "14", statusRumah: "DI HUNI PEMILIK" },
+      { no: 31, nama: "GALIH", blok: "B", noRumah: "15", statusRumah: "KOSONG (MEMBAYAR IURAN)" },
+      { no: 32, nama: "IRWAN", blok: "B", noRumah: "16", statusRumah: "KOSONG (MEMBAYAR IURAN)" },
+      { no: 33, nama: "WINARDI", blok: "B", noRumah: "17", statusRumah: "KOSONG (ADA PEMILIK)" },
+      { no: 34, nama: "GALIH", blok: "B", noRumah: "18", statusRumah: "KOSONG (MEMBAYAR IURAN)" },
+      { no: 35, nama: "EKO", blok: "B", noRumah: "19", statusRumah: "DI HUNI PEMILIK" },
+      { no: 36, nama: "DYO", blok: "B", noRumah: "20", statusRumah: "DI HUNI PEMILIK" },
+      { no: 37, nama: "RONI", blok: "B", noRumah: "21", statusRumah: "KOSONG (ADA PEMILIK)" },
+      { no: 38, nama: "MBAK BELLA", blok: "B", noRumah: "22", statusRumah: "KOSONG (ADA PEMILIK)" },
+      { no: 39, nama: "SONY", blok: "B", noRumah: "23", statusRumah: "DI HUNI PEMILIK" },
+      { no: 40, nama: "BENI", blok: "B", noRumah: "24", statusRumah: "DI HUNI PEMILIK" },
+      { no: 41, nama: "DEWO", blok: "B", noRumah: "25", statusRumah: "DI HUNI PEMILIK" },
+      { no: 42, lang: "id", nama: "HENGKI", blok: "B", noRumah: "26", statusRumah: "DI HUNI PEMILIK" },
+      { no: 43, nama: "DWI", blok: "B", noRumah: "27", statusRumah: "DI HUNI PEMILIK" },
+
+      { no: 44, nama: "GAPTA", blok: "C", noRumah: "01", statusRumah: "DI HUNI PEMILIK" },
+      { no: 45, nama: "GALIH", blok: "C", noRumah: "02", statusRumah: "KOSONG (MEMBAYAR IURAN)" },
+      { no: 46, nama: "TRI CAHYADI", blok: "C", noRumah: "03", statusRumah: "DI HUNI PEMILIK" },
+      { no: 47, nama: "GALIH", blok: "C", noRumah: "04", statusRumah: "KOSONG (MEMBAYAR IURAN)" },
+      { no: 48, nama: "ALID", blok: "C", noRumah: "05", statusRumah: "DI HUNI PEMILIK" },
+      { no: 49, nama: "YULIA", blok: "C", noRumah: "06", statusRumah: "DI HUNI PEMILIK" },
+      { no: 50, nama: "(Unit C 07)", blok: "C", noRumah: "07", statusRumah: "BELUM ADA PEMILIK" },
+      { no: 51, nama: "HANS", blok: "C", noRumah: "08", statusRumah: "DI HUNI PEMILIK" },
+      { no: 52, nama: "RANTO", blok: "C", noRumah: "09", statusRumah: "KOSONG (ADA PEMILIK)" },
+      { no: 53, nama: "RUDI", blok: "C", noRumah: "10", statusRumah: "DI HUNI PEMILIK" },
+      { no: 54, nama: "FALLAH", blok: "C", noRumah: "11", statusRumah: "DI HUNI PEMILIK" },
+      { no: 55, nama: "JOKO TRI", blok: "C", noRumah: "12", statusRumah: "DI HUNI PEMILIK" },
+      { no: 56, nama: "SAYOGO", blok: "C", noRumah: "13", statusRumah: "DI HUNI PEMILIK" },
+      { no: 57, nama: "DIAN", blok: "C", noRumah: "14", statusRumah: "DI HUNI PEMILIK" },
+      { no: 58, nama: "ROBY C", blok: "C", noRumah: "15", statusRumah: "DI HUNI PEMILIK" }
+    ];
+
+    // INITIAL DATA SETS
+    let wargaData = JSON.parse(localStorage.getItem('grises_warga')) || DEFAULT_58_WARGA.map(w => ({
+      ...w,
+      hp: '0812345' + String(w.no).padStart(4, '0')
+    }));
+
+    let kasData = JSON.parse(localStorage.getItem('grises_kas')) || [
+      { id: 1, tipe: 'MASUK', kategori: 'Saldo Awal', nominal: 6500000, tanggal: '2026-10-01', keterangan: 'Saldo awal kas paguyuban pembukuan Oktober', pencatat: 'Eko (Bendahara)', bukti: 'KAS-IN-001' },
+      { id: 2, tipe: 'MASUK', kategori: 'Iuran Warga', nominal: 1625000, tanggal: '2026-10-05', keterangan: 'Setoran iuran & sampah 25 rumah', pencatat: 'Eko (Bendahara)', bukti: 'KAS-IN-002' },
+      { id: 3, tipe: 'MASUK', kategori: 'Jimpitan Ronda', nominal: 210000, tanggal: '2026-10-24', keterangan: 'Setor Jimpitan Ronda malam minggu lalu', pencatat: 'Hengki (Seksi Ronda)', bukti: 'KAS-IN-003' },
+      { id: 4, tipe: 'MASUK', kategori: 'Donasi Warga', nominal: 350000, tanggal: '2026-10-08', keterangan: 'Donasi warga Blok B untuk pengecatan pos', pencatat: 'Eko (Bendahara)', bukti: 'KAS-IN-004' },
+      { id: 5, tipe: 'KELUAR', kategori: 'Kebersihan & Sampah', nominal: 550000, tanggal: '2026-10-06', keterangan: 'Retribusi angkutan truk sampah kelurahan Sedayu', pencatat: 'Eko (Bendahara)', bukti: 'KAS-OUT-001' },
+      { id: 6, tipe: 'KELUAR', kategori: 'Keamanan & Satpam', nominal: 1350000, tanggal: '2026-10-10', keterangan: 'Honor petugas keamanan pos jaga utama', pencatat: 'Eko (Bendahara)', bukti: 'KAS-OUT-002' },
+      { id: 7, tipe: 'KELUAR', kategori: 'Perbaikan Fasum', nominal: 220000, tanggal: '2026-10-12', keterangan: 'Perbaikan lampu penerangan jalan Blok B & C', pencatat: 'Dewo (Seksi Fasum)', bukti: 'KAS-OUT-003' }
+    ];
+
+    let iuranData = JSON.parse(localStorage.getItem('grises_iuran')) || wargaData.map((w, idx) => {
+      const wajib = w.statusRumah !== 'BELUM ADA PEMILIK' && w.statusRumah !== 'KOSONG (ADA PEMILIK)';
+      return {
+        wargaNo: w.no,
+        bulan: 10,
+        tahun: 2026,
+        nominal: wajib ? 65000 : 0,
+        isLunas: wajib && (idx % 3 !== 1),
+        tglBayar: (wajib && idx % 3 !== 1) ? '2026-10-05' : null,
+        metode: idx % 2 === 0 ? 'Transfer' : 'Tunai'
+      };
+    });
+
+    let jimpitanMap = JSON.parse(localStorage.getItem('grises_jimpitan')) || {}; // key: "YYYY-MM-DD_no" -> boolean
+
+    let inventarisData = JSON.parse(localStorage.getItem('grises_inventaris')) || [
+      { id: 1, nama: 'Tenda Paguyuban 3x6m', kode: 'INV-TND-01', total: 2, tersedia: 1, lokasi: 'Gudang Fasum Blok C', status: 'Dipinjam', peminjam: 'Sony (B 23)', kembali: '2 hari lagi' },
+      { id: 2, nama: 'Kursi Lipat Chitose', kode: 'INV-KRS-01', total: 100, tersedia: 70, lokasi: 'Gudang Fasum Blok C', status: 'Dipinjam', peminjam: 'Sony (B 23 - 30 pcs)', kembali: '2 hari lagi' },
+      { id: 3, nama: 'Sound System Portabel & 2 Mic Wireless', kode: 'INV-SND-01', total: 1, tersedia: 1, lokasi: 'Balai Warga Blok A', status: 'Tersedia' },
+      { id: 4, nama: 'Mesin Potong Rumput Stihl', kode: 'INV-MPT-01', total: 1, tersedia: 1, lokasi: 'Gudang Fasum', status: 'Tersedia' },
+      { id: 5, nama: 'Tangga Lipat Aluminium 3.8m', kode: 'INV-TNG-01', total: 1, tersedia: 1, lokasi: 'Pos Ronda Utama', status: 'Tersedia' },
+      { id: 6, nama: 'Gerobak Sorong Sampah Artco', kode: 'INV-GBK-01', total: 2, tersedia: 2, lokasi: 'Samping Pos Ronda', status: 'Tersedia' },
+      { id: 7, nama: 'Terpal Biru Tebal 4x6m', kode: 'INV-TRP-01', total: 4, tersedia: 4, lokasi: 'Gudang Fasum', status: 'Tersedia' },
+      { id: 8, nama: 'Lampu Sorot LED 100W Stand', kode: 'INV-LMP-01', total: 2, tersedia: 2, lokasi: 'Balai Warga', status: 'Tersedia' }
+    ];
+
+    let agendaData = JSON.parse(localStorage.getItem('grises_agenda')) || [
+      { id: 1, judul: 'Kerja Bakti Bersih Saluran & Pohon', tgl: '2026-10-26', jam: '07:00 - 10:00 WIB', lokasi: 'Lingkungan Blok A, B, C & Balai Pertemuan', pj: 'Dewo (Seksi Fasum)', deskripsi: 'Pembersihan drainase menjelang musim hujan dan pemotongan dahan pohon.' },
+      { id: 2, judul: 'Pertemuan Rutin & Arisan Paguyuban', tgl: '2026-10-28', jam: '19:30 WIB', lokasi: 'Balai Warga Perum Griya Sedayu Selaras', pj: 'Pengurus Paguyuban GSS', deskripsi: 'Laporan keuangan kas transparan, evaluasi ronda malam, dan iuran portal otomatis.' },
+      { id: 3, judul: 'Ronda Malam Bersama Regu Blok B & C', tgl: '2026-10-26', jam: '22:00 - 04:00 WIB', lokasi: 'Pos Ronda Utama & Keliling Lingkungan', pj: 'Hengki (Koordinator Ronda)', deskripsi: 'Penarikan jimpitan koin Rp 500 per rumah di seluruh blok.' }
+    ];
+
+    let isAdmin = true;
+    let currentIuranFilter = 'Semua';
+    let currentKasFilter = 'Semua';
+
+    function formatRp(num) {
+      return 'Rp ' + Number(num || 0).toLocaleString('id-ID');
+    }
+
+    function saveAll() {
+      localStorage.setItem('grises_warga', JSON.stringify(wargaData));
+      localStorage.setItem('grises_kas', JSON.stringify(kasData));
+      localStorage.setItem('grises_iuran', JSON.stringify(iuranData));
+      localStorage.setItem('grises_jimpitan', JSON.stringify(jimpitanMap));
+      localStorage.setItem('grises_inventaris', JSON.stringify(inventarisData));
+      localStorage.setItem('grises_agenda', JSON.stringify(agendaData));
+      updateDashboardStats();
+    }
+
+    function toggleRole(admin) {
+      isAdmin = admin;
+      const adminBtn = document.getElementById('role-admin-btn');
+      const wargaBtn = document.getElementById('role-warga-btn');
+      const title = document.getElementById('role-title');
+      const desc = document.getElementById('role-desc');
+
+      if (admin) {
+        adminBtn.className = "px-3 py-1 rounded-full text-xs font-bold transition flex items-center gap-1.5 bg-emerald-600 text-white shadow";
+        wargaBtn.className = "px-3 py-1 rounded-full text-xs font-medium text-emerald-200 hover:text-white transition flex items-center gap-1.5";
+        title.innerText = "Mode Pengurus Aktif (Admin)";
+        desc.innerText = "Anda memiliki izin penuh untuk mencatat iuran, jimpitan harian, transaksi kas, dan edit warga.";
+        document.querySelectorAll('.admin-only').forEach(el => el.style.display = '');
+      } else {
+        wargaBtn.className = "px-3 py-1 rounded-full text-xs font-bold transition flex items-center gap-1.5 bg-emerald-600 text-white shadow";
+        adminBtn.className = "px-3 py-1 rounded-full text-xs font-medium text-emerald-200 hover:text-white transition flex items-center gap-1.5";
+        title.innerText = "Mode Warga Aktif (Transparansi Publik)";
+        desc.innerText = "Akses melihat laporan kas terbuka, agenda kegiatan, cek status iuran pribadi, dan cek inventaris.";
+        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+      }
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-tab').forEach(el => {
+        el.classList.remove('bg-emerald-800', 'text-white');
+        el.classList.add('text-emerald-100');
+      });
+
+      const target = document.getElementById('tab-' + tabId);
+      const navBtn = document.getElementById('nav-' + tabId);
+      if (target) target.classList.add('active');
+      if (navBtn) {
+        navBtn.classList.add('bg-emerald-800', 'text-white');
+        navBtn.classList.remove('text-emerald-100');
+      }
+
+      if (tabId === 'warga') renderWargaTable();
+      if (tabId === 'iuran') renderIuranTable();
+      if (tabId === 'jimpitan') renderJimpitanGrid();
+      if (tabId === 'kas') renderKasTable();
+      if (tabId === 'inventaris') renderInventaris();
+      if (tabId === 'agenda') renderAgenda();
+      updateDashboardStats();
+    }
+
+    // UPDATE DASHBOARD STATS
+    function updateDashboardStats() {
+      const masuk = kasData.filter(k => k.tipe === 'MASUK').reduce((acc, k) => acc + k.nominal, 0);
+      const keluar = kasData.filter(k => k.tipe === 'KELUAR').reduce((acc, k) => acc + k.nominal, 0);
+      const saldo = masuk - keluar;
+
+      document.getElementById('stat-saldo-kas').innerText = formatRp(saldo);
+      document.getElementById('stat-kas-masuk').innerText = formatRp(masuk);
+      document.getElementById('stat-kas-keluar').innerText = formatRp(keluar);
+      document.getElementById('kas-page-saldo').innerText = formatRp(saldo);
+      document.getElementById('kas-page-masuk').innerText = formatRp(masuk);
+      document.getElementById('kas-page-keluar').innerText = formatRp(keluar);
+
+      // Jimpitan Today
+      const today = new Date().toISOString().split('T')[0];
+      const todayCollected = wargaData.filter(w => isJimpitanCollected(today, w.no));
+      const todayTotal = todayCollected.length * 500;
+      document.getElementById('stat-jimpitan-today').innerText = formatRp(todayTotal);
+      document.getElementById('stat-jimpitan-houses').innerText = todayCollected.length + " Rumah Berpartisipasi";
+
+      // Iuran Stats
+      const paidIuran = iuranData.filter(i => i.isLunas);
+      const totalWajib = iuranData.filter(i => i.nominal > 0).length;
+      const pct = totalWajib > 0 ? Math.round((paidIuran.length / totalWajib) * 100) : 0;
+      document.getElementById('stat-iuran-paid-count').innerText = `${paidIuran.length} / ${totalWajib} Lunas`;
+      document.getElementById('stat-iuran-percent').innerText = `${pct}%`;
+      document.getElementById('stat-iuran-progress').style.width = `${pct}%`;
+      const iuranTerkumpul = paidIuran.reduce((acc, i) => acc + i.nominal, 0);
+      document.getElementById('stat-iuran-amount').innerText = formatRp(iuranTerkumpul);
+
+      // Warga stats
+      const dihuni = wargaData.filter(w => w.statusRumah.startsWith('DI HUNI')).length;
+      const kosong = wargaData.length - dihuni;
+      document.getElementById('stat-warga-dihuni').innerText = dihuni;
+      document.getElementById('stat-warga-kosong').innerText = kosong;
+
+      // Dashboard recent lists
+      renderDashboardRecents();
+    }
+
+    function renderDashboardRecents() {
+      const kasContainer = document.getElementById('dashboard-recent-kas');
+      kasContainer.innerHTML = kasData.slice(-4).reverse().map(k => `
+        <div class="flex items-center justify-between p-2 rounded-lg bg-gray-50 border border-gray-100">
+          <div>
+            <span class="font-bold text-gray-800">${k.kategori}</span>
+            <p class="text-[10px] text-gray-500">${k.tanggal} • ${k.keterangan}</p>
+          </div>
+          <span class="font-bold ${k.tipe === 'MASUK' ? 'text-emerald-600' : 'text-rose-600'}">
+            ${k.tipe === 'MASUK' ? '+' : '-'} ${formatRp(k.nominal)}
+          </span>
+        </div>
+      `).join('');
+
+      const agendaContainer = document.getElementById('dashboard-recent-agenda');
+      agendaContainer.innerHTML = agendaData.slice(0, 3).map(a => `
+        <div class="p-2.5 rounded-lg bg-gray-50 border border-gray-100 flex items-start gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs shrink-0">
+            <i class="fa-solid fa-calendar"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-gray-800">${a.judul}</h4>
+            <p class="text-[11px] text-emerald-700 font-semibold">${a.tgl} • ${a.jam}</p>
+            <p class="text-[10px] text-gray-500">📍 ${a.lokasi}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // WARGA TABLE
+    function renderWargaTable() {
+      const search = (document.getElementById('warga-search').value || '').toLowerCase();
+      const blok = document.getElementById('warga-filter-blok').value;
+      const status = document.getElementById('warga-filter-status').value;
+      const tbody = document.getElementById('warga-tbody');
+
+      const filtered = wargaData.filter(w => {
+        const matchSearch = w.nama.toLowerCase().includes(search) ||
+          w.blok.toLowerCase().includes(search) ||
+          w.noRumah.toLowerCase().includes(search) ||
+          w.statusRumah.toLowerCase().includes(search);
+        const matchBlok = blok === 'Semua' || w.blok === blok;
+        const matchStatus = status === 'Semua' || w.statusRumah === status;
+        return matchSearch && matchBlok && matchStatus;
+      });
+
+      tbody.innerHTML = filtered.map(w => {
+        const isDihuni = w.statusRumah.startsWith('DI HUNI');
+        const badgeClass = w.statusRumah === 'DI HUNI PEMILIK' ? 'badge-lunas' :
+                           w.statusRumah === 'DI HUNI KONTRAK' ? 'bg-teal-50 text-teal-800 border-teal-200 border' :
+                           w.statusRumah.includes('MEMBAYAR') ? 'badge-pending' : 'bg-gray-100 text-gray-600 border border-gray-200';
+
+        return `
+          <tr class="hover:bg-gray-50/80 transition">
+            <td class="py-3 px-4 text-center font-bold text-gray-500">${w.no}</td>
+            <td class="py-3 px-4">
+              <span class="font-extrabold text-grises-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                Blok ${w.blok} No. ${w.noRumah}
+              </span>
+            </td>
+            <td class="py-3 px-4 font-bold text-gray-900">${w.nama}</td>
+            <td class="py-3 px-4">
+              <span class="px-2 py-0.5 rounded text-[11px] font-bold ${badgeClass}">
+                ${w.statusRumah}
+              </span>
+            </td>
+            <td class="py-3 px-4 text-gray-600">
+              ${w.statusRumah !== 'BELUM ADA PEMILIK' ? `
+                <a href="https://api.whatsapp.com/send?phone=62${w.hp ? w.hp.replace(/^0/, '') : ''}&text=Halo%20Bpk/Ibu%20${encodeURIComponent(w.nama)}%20(Blok%20${w.blok}%20No.%20${w.noRumah})%20Perum%20GSS" target="_blank" class="inline-flex items-center gap-1 text-emerald-700 hover:text-emerald-800 font-bold bg-emerald-50 px-2 py-1 rounded border border-emerald-200">
+                  <i class="fa-brands fa-whatsapp text-sm text-emerald-600"></i> ${w.hp || '-'}
+                </a>
+              ` : '<span class="text-gray-400 italic">Belum Ada</span>'}
+            </td>
+            <td class="py-3 px-4 text-center">
+              <div class="flex items-center justify-center gap-1.5">
+                <button onclick="sendPersonalTagihanWA(${w.no})" title="Kirim Tagihan WA" class="text-emerald-600 hover:text-emerald-800 p-1.5 rounded hover:bg-emerald-50 font-bold">
+                  <i class="fa-brands fa-whatsapp text-base"></i>
+                </button>
+                <button onclick="editWarga(${w.no})" class="admin-only text-blue-600 hover:text-blue-800 p-1.5 rounded hover:bg-blue-50">
+                  <i class="fa-solid fa-pen text-xs"></i>
+                </button>
+                <button onclick="deleteWarga(${w.no})" class="admin-only text-rose-600 hover:text-rose-800 p-1.5 rounded hover:bg-rose-50">
+                  <i class="fa-solid fa-trash text-xs"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // IURAN TABLE
+    function setIuranFilter(status) {
+      currentIuranFilter = status;
+      document.getElementById('btn-filter-iuran-all').className = status === 'Semua' ? 'px-3 py-1 rounded-full text-xs font-bold bg-grises-700 text-white' : 'px-3 py-1 rounded-full text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200';
+      document.getElementById('btn-filter-iuran-belum').className = status === 'BELUM' ? 'px-3 py-1 rounded-full text-xs font-bold bg-rose-700 text-white' : 'px-3 py-1 rounded-full text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200';
+      document.getElementById('btn-filter-iuran-lunas').className = status === 'LUNAS' ? 'px-3 py-1 rounded-full text-xs font-bold bg-emerald-700 text-white' : 'px-3 py-1 rounded-full text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200';
+      renderIuranTable();
+    }
+
+    function renderIuranTable() {
+      const tbody = document.getElementById('iuran-tbody');
+      const filtered = iuranData.filter(i => {
+        if (currentIuranFilter === 'LUNAS') return i.isLunas;
+        if (currentIuranFilter === 'BELUM') return !i.isLunas;
+        return true;
+      });
+
+      tbody.innerHTML = filtered.map(i => {
+        const warga = wargaData.find(w => w.no === i.wargaNo) || { nama: 'Unknown', blok: '-', noRumah: '-', hp: '' };
+        return `
+          <tr class="hover:bg-gray-50/80 transition">
+            <td class="py-3 px-4 text-center font-bold text-gray-400">${i.wargaNo}</td>
+            <td class="py-3 px-4">
+              <div class="font-bold text-gray-900">${warga.nama}</div>
+              <div class="text-[11px] text-gray-500 font-semibold">Blok ${warga.blok} No. ${warga.noRumah}</div>
+            </td>
+            <td class="py-3 px-4 font-bold text-grises-700">
+              ${formatRp(i.nominal)}
+              <span class="block text-[10px] text-gray-400 font-normal">Iuran 50k + Sampah 15k</span>
+            </td>
+            <td class="py-3 px-4">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${i.isLunas ? 'badge-lunas' : 'badge-belum'}">
+                ${i.isLunas ? 'LUNAS' : 'BELUM LUNAS'}
+              </span>
+            </td>
+            <td class="py-3 px-4 text-[11px] text-gray-500">
+              ${i.isLunas ? `${i.tglBayar} (${i.metode})` : '-'}
+            </td>
+            <td class="py-3 px-4 text-center">
+              <div class="flex items-center justify-center gap-1.5">
+                ${!i.isLunas ? `
+                  <button onclick="sendPersonalTagihanWA(${warga.no})" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded text-xs font-bold flex items-center gap-1 shadow-sm">
+                    <i class="fa-brands fa-whatsapp"></i> Tagihan WA
+                  </button>
+                  <button onclick="toggleBayarIuran(${i.wargaNo})" class="admin-only bg-grises-700 hover:bg-grises-800 text-white px-2.5 py-1 rounded text-xs font-bold">
+                    Catat Lunas
+                  </button>
+                ` : `
+                  <button onclick="toggleBayarIuran(${i.wargaNo})" class="admin-only text-gray-500 hover:text-rose-600 px-2 py-1 text-xs">
+                    Batalkan
+                  </button>
+                `}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function toggleBayarIuran(wargaNo) {
+      const item = iuranData.find(i => i.wargaNo === wargaNo);
+      if (item) {
+        item.isLunas = !item.isLunas;
+        item.tglBayar = item.isLunas ? new Date().toISOString().split('T')[0] : null;
+        if (item.isLunas) {
+          // Log to kas automatically
+          const warga = wargaData.find(w => w.no === wargaNo);
+          kasData.push({
+            id: Date.now(),
+            tipe: 'MASUK',
+            kategori: 'Iuran Warga',
+            nominal: item.nominal,
+            tanggal: item.tglBayar,
+            keterangan: `Iuran ${warga.nama} (Blok ${warga.blok} No. ${warga.noRumah})`,
+            pencatat: 'Bendahara Paguyuban',
+            bukti: 'IUR-' + Date.now().toString().slice(-4)
+          });
+        }
+        saveAll();
+        renderIuranTable();
+      }
+    }
+
+    // WHATSAPP GENERATOR
+    function sendPersonalTagihanWA(wargaNo) {
+      const warga = wargaData.find(w => w.no === wargaNo);
+      if (!warga) return;
+
+      const text = `*PAGUYUBAN PERUM GRIYA SEDAYU SELARAS (GRISES)*
+_Guyub Rukun, Aman, & Transparan_
+------------------------------------------------
+Yth. Bpk/Ibu *${warga.nama}*
+Alamat: *Blok ${warga.blok} No. ${warga.noRumah}*
+
+Semoga Bpk/Ibu sekeluarga senantiasa sehat dan dilimpahkan berkah.
+
+Kami menyampaikan rincian Iuran Paguyuban untuk periode *Bulan Berjalan 2026*:
+• Iuran Paguyuban & Keamanan : Rp 50.000
+• Pengelolaan Sampah Lingkungan: Rp 15.000
+*TOTAL TAGIHAN: Rp 65.000*
+Status: *BELUM LUNAS* ⚠️
+------------------------------------------------
+Pembayaran dapat disalurkan melalui:
+🏦 Bank BPD DIY: *006.211.045892*
+a.n. *Paguyuban Griya Sedayu Selaras*
+(Atau tunai langsung ke Bendahara Bpk. Eko Prasetyo / Petugas Ronda)
+
+Terima kasih atas kepedulian Bpk/Ibu dalam menjaga kebersihan dan keamanan lingkungan kita bersama. 🙏✨`;
+
+      const cleanPhone = (warga.hp || '').replace(/^0/, '62');
+      const url = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
+    }
+
+    function broadcastTagihanGrupWA() {
+      const unpaid = iuranData.filter(i => !i.isLunas);
+      const unpaidHouses = unpaid.map((i, idx) => {
+        const w = wargaData.find(x => x.no === i.wargaNo);
+        return `${idx + 1}. Blok ${w.blok} No. ${w.noRumah} - ${w.nama}`;
+      }).join('\n');
+
+      const broadcastText = `📢 *REKAP TAGIHAN IURAN PERUM GRIYA SEDAYU SELARAS* 📢
+Periode: *Bulan Berjalan 2026*
+------------------------------------------------
+Yth. Seluruh Warga Paguyuban Griya Sedayu Selaras,
+
+Diberitahukan bahwa total tagihan Iuran Paguyuban & Kebersihan Sampah (Rp 65.000/rumah) yang belum terbayar:
+${unpaidHouses}
+
+Pembayaran dapat ditransfer ke:
+🏦 Bank BPD DIY: *006.211.045892* (a.n Paguyuban Griya Sedayu Selaras)
+Atau ke Bendahara (Bpk. Eko Prasetyo).
+
+Terima kasih atas kerjasama seluruh warga demi kenyamanan lingkungan kita bersama! 🙏`;
+
+      const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(broadcastText)}`;
+      window.open(url, '_blank');
+    }
+
+    // JIMPITAN RONDA
+    function isJimpitanCollected(date, no) {
+      const key = `${date}_${no}`;
+      return jimpitanMap[key] === true;
+    }
+
+    function renderJimpitanGrid() {
+      const datePicker = document.getElementById('jimpitan-date-picker');
+      if (!datePicker.value) {
+        datePicker.value = new Date().toISOString().split('T')[0];
+      }
+      const selectedDate = datePicker.value;
+      const grid = document.getElementById('jimpitan-houses-grid');
+
+      // Update statistics
+      const collectedWarga = wargaData.filter(w => isJimpitanCollected(selectedDate, w.no));
+      const totalCollected = collectedWarga.length * 500;
+      document.getElementById('jimpitan-sum-today').innerText = formatRp(totalCollected);
+      document.getElementById('jimpitan-sum-houses').innerText = `${collectedWarga.length} Rumah dari ${wargaData.length}`;
+
+      // Calculate unbanked total (collected in past but not yet banked)
+      const allKeys = Object.keys(jimpitanMap).filter(k => jimpitanMap[k] === true);
+      const totalKoinSemua = allKeys.length * 500;
+      document.getElementById('jimpitan-sum-month').innerText = formatRp(totalKoinSemua);
+      document.getElementById('jimpitan-sum-unbanked').innerText = formatRp(totalCollected);
+
+      grid.innerHTML = wargaData.map(w => {
+        const collected = isJimpitanCollected(selectedDate, w.no);
+        return `
+          <div onclick="${isAdmin ? `toggleJimpitanHouse('${selectedDate}', ${w.no})` : ''}" class="cursor-pointer p-3 rounded-xl border transition text-center select-none ${collected ? 'bg-emerald-50 border-emerald-400 text-emerald-900 shadow-sm' : 'bg-white border-gray-200 text-gray-500 hover:border-gray-300'}">
+            <span class="text-xs font-black block">${w.blok} ${w.noRumah}</span>
+            <span class="text-[11px] truncate block font-medium mt-0.5">${w.nama}</span>
+            <div class="mt-2 text-xs font-extrabold ${collected ? 'text-emerald-700' : 'text-gray-400'}">
+              ${collected ? '<i class="fa-solid fa-circle-check"></i> Rp 500' : '<i class="fa-regular fa-circle"></i> Rp 0'}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleJimpitanHouse(date, no) {
+      const key = `${date}_${no}`;
+      jimpitanMap[key] = !jimpitanMap[key];
+      saveAll();
+      renderJimpitanGrid();
+    }
+
+    function ambilSemuaJimpitan() {
+      const date = document.getElementById('jimpitan-date-picker').value || new Date().toISOString().split('T')[0];
+      wargaData.forEach(w => {
+        if (w.statusRumah.startsWith('DI HUNI')) {
+          jimpitanMap[`${date}_${w.no}`] = true;
+        }
+      });
+      saveAll();
+      renderJimpitanGrid();
+      alert('Semua rumah berpenghuni berhasil ditandai terisi Rp 500 untuk tanggal ' + date);
+    }
+
+    function setorJimpitanKeKas() {
+      const date = document.getElementById('jimpitan-date-picker').value || new Date().toISOString().split('T')[0];
+      const collected = wargaData.filter(w => isJimpitanCollected(date, w.no));
+      const total = collected.length * 500;
+
+      if (total <= 0) {
+        alert('Tidak ada dana jimpitan untuk tanggal terpilih!');
+        return;
+      }
+
+      kasData.push({
+        id: Date.now(),
+        tipe: 'MASUK',
+        kategori: 'Jimpitan Ronda',
+        nominal: total,
+        tanggal: date,
+        keterangan: `Setoran Jimpitan Ronda Tanggal ${date} (${collected.length} rumah)`,
+        pencatat: 'Petugas Ronda',
+        bukti: 'JMP-' + Date.now().toString().slice(-4)
+      });
+      saveAll();
+      alert(`Berhasil menyetor ${formatRp(total)} ke Buku Kas Paguyuban!`);
+      switchTab('kas');
+    }
+
+    // KAS TABLE
+    function setKasFilter(filter) {
+      currentKasFilter = filter;
+      document.getElementById('btn-filter-kas-all').className = filter === 'Semua' ? 'px-3 py-1 rounded-full text-xs font-bold bg-grises-700 text-white' : 'px-3 py-1 rounded-full text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200';
+      document.getElementById('btn-filter-kas-in').className = filter === 'MASUK' ? 'px-3 py-1 rounded-full text-xs font-bold bg-emerald-700 text-white' : 'px-3 py-1 rounded-full text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200';
+      document.getElementById('btn-filter-kas-out').className = filter === 'KELUAR' ? 'px-3 py-1 rounded-full text-xs font-bold bg-rose-700 text-white' : 'px-3 py-1 rounded-full text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200';
+      renderKasTable();
+    }
+
+    function renderKasTable() {
+      const search = (document.getElementById('kas-search').value || '').toLowerCase();
+      const tbody = document.getElementById('kas-tbody');
+
+      const filtered = kasData.filter(k => {
+        const matchFilter = currentKasFilter === 'Semua' || k.tipe === currentKasFilter;
+        const matchSearch = k.keterangan.toLowerCase().includes(search) ||
+                            k.kategori.toLowerCase().includes(search) ||
+                            (k.bukti || '').toLowerCase().includes(search);
+        return matchFilter && matchSearch;
+      });
+
+      tbody.innerHTML = filtered.slice().reverse().map(k => {
+        const isMasuk = k.tipe === 'MASUK';
+        return `
+          <tr class="hover:bg-gray-50/80 transition">
+            <td class="py-3 px-4 text-gray-500 font-semibold">${k.tanggal}</td>
+            <td class="py-3 px-4">
+              <span class="px-2 py-0.5 rounded text-[10px] font-extrabold ${isMasuk ? 'badge-lunas' : 'badge-belum'}">
+                ${isMasuk ? 'MASUK (+)' : 'KELUAR (-)'}
+              </span>
+            </td>
+            <td class="py-3 px-4">
+              <span class="font-bold text-gray-800 block">${k.kategori}</span>
+              <span class="text-gray-500">${k.keterangan}</span>
+            </td>
+            <td class="py-3 px-4 text-gray-500">
+              <span class="block font-medium">${k.pencatat}</span>
+              <span class="text-[10px] text-gray-400 font-mono">${k.bukti || '-'}</span>
+            </td>
+            <td class="py-3 px-4 text-right font-black ${isMasuk ? 'text-emerald-700' : 'text-rose-700'}">
+              ${isMasuk ? '+' : '-'} ${formatRp(k.nominal)}
+            </td>
+            <td class="py-3 px-4 text-center admin-only">
+              <button onclick="deleteKas(${k.id})" class="text-rose-600 hover:text-rose-800 p-1">
+                <i class="fa-solid fa-trash text-xs"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function exportKasToCSV() {
+      let csv = "ID,Tanggal,Tipe,Kategori,Keterangan,Nominal,Pencatat,Bukti\n";
+      kasData.forEach(k => {
+        csv += `"${k.id}","${k.tanggal}","${k.tipe}","${k.kategori}","${k.keterangan.replace(/"/g, '""')}","${k.nominal}","${k.pencatat}","${k.bukti}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Buku_Kas_GRISES_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+    }
+
+    // INVENTARIS
+    function renderInventaris() {
+      const container = document.getElementById('inventaris-cards-grid');
+      container.innerHTML = inventarisData.map(item => `
+        <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm space-y-3">
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="text-[10px] text-gray-400 font-mono">${item.kode}</span>
+              <h4 class="font-bold text-gray-900 text-sm">${item.nama}</h4>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[11px] font-bold ${item.status === 'Tersedia' ? 'badge-lunas' : 'badge-pending'}">
+              ${item.status} (${item.tersedia}/${item.total})
+            </span>
+          </div>
+          <div class="text-xs text-gray-500">
+            <p><i class="fa-solid fa-location-dot text-emerald-600"></i> ${item.lokasi}</p>
+            ${item.peminjam ? `<p class="mt-1 text-amber-700 font-semibold"><i class="fa-solid fa-handshake"></i> ${item.peminjam} (Kembali: ${item.kembali || '-'})</p>` : ''}
+          </div>
+          <div class="pt-2 border-t border-gray-100 flex items-center justify-between text-xs">
+            ${item.tersedia > 0 ? `
+              <button onclick="pinjamItemPrompt(${item.id})" class="text-grises-700 font-bold hover:underline flex items-center gap-1">
+                <i class="fa-solid fa-hand-holding-hand"></i> Pinjam Barang
+              </button>
+            ` : '<span class="text-gray-400">Habis Dipinjam</span>'}
+            ${item.status !== 'Tersedia' ? `
+              <button onclick="kembalikanItem(${item.id})" class="text-amber-700 font-bold hover:underline">Kembalikan</button>
+            ` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function pinjamItemPrompt(id) {
+      const item = inventarisData.find(i => i.id === id);
+      if (!item) return;
+      const peminjam = prompt(`Pinjam "${item.nama}". Masukkan Nama & Blok Peminjam:`);
+      if (peminjam) {
+        item.status = 'Dipinjam';
+        item.tersedia = Math.max(0, item.tersedia - 1);
+        item.peminjam = peminjam;
+        item.kembali = '2 hari lagi';
+        saveAll();
+        renderInventaris();
+      }
+    }
+
+    function kembalikanItem(id) {
+      const item = inventarisData.find(i => i.id === id);
+      if (item) {
+        item.status = 'Tersedia';
+        item.tersedia = item.total;
+        item.peminjam = null;
+        item.kembali = null;
+        saveAll();
+        renderInventaris();
+      }
+    }
+
+    // AGENDA
+    function renderAgenda() {
+      const container = document.getElementById('agenda-cards-grid');
+      container.innerHTML = agendaData.map(a => `
+        <div class="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm space-y-3">
+          <div class="flex justify-between items-start">
+            <h4 class="font-bold text-gray-900 text-base">${a.judul}</h4>
+            <span class="badge-lunas text-[11px] font-bold px-2 py-0.5 rounded">Akan Datang</span>
+          </div>
+          <div class="text-xs space-y-1 text-gray-600">
+            <p><i class="fa-regular fa-clock text-emerald-600 w-4"></i> ${a.tgl} • ${a.jam}</p>
+            <p><i class="fa-solid fa-location-dot text-emerald-600 w-4"></i> ${a.lokasi}</p>
+            <p><i class="fa-solid fa-user-tie text-emerald-600 w-4"></i> Koordinator: ${a.pj}</p>
+          </div>
+          <p class="text-xs text-gray-500 bg-gray-50 p-2.5 rounded-xl border border-gray-100">${a.deskripsi}</p>
+          <div class="pt-2 flex justify-between items-center text-xs">
+            <a href="https://api.whatsapp.com/send?text=${encodeURIComponent(`📢 *AGENDA KEGIATAN GRISES*\n📌 ${a.judul}\n🗓 ${a.tgl} (${a.jam})\n📍 ${a.lokasi}\n\n${a.deskripsi}`)}" target="_blank" class="text-emerald-700 font-bold hover:underline flex items-center gap-1">
+              <i class="fa-brands fa-whatsapp text-sm"></i> Bagikan ke Grup WA
+            </a>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // RESET OFFICIAL DATA
+    function syncOfficialDataPrompt() {
+      if (confirm('Sinkronkan data dengan 58 warga resmi Perum Griya Sedayu Selaras dari dokumen PDF?')) {
+        wargaData = DEFAULT_58_WARGA.map(w => ({
+          ...w,
+          hp: '0812345' + String(w.no).padStart(4, '0')
+        }));
+        saveAll();
+        switchTab('warga');
+        alert('58 Data Warga berhasil disinkronkan!');
+      }
+    }
+
+    // MODAL HELPERS
+    function openModalAddWarga() {
+      document.getElementById('modal-warga-title').innerText = "Tambah Data Warga Baru";
+      document.getElementById('warga-id').value = "";
+      document.getElementById('form-warga-nama').value = "";
+      document.getElementById('form-warga-blok').value = "A";
+      document.getElementById('form-warga-norumah').value = "";
+      document.getElementById('form-warga-hp').value = "";
+      document.getElementById('modal-warga').classList.remove('hidden');
+    }
+
+    function editWarga(no) {
+      const w = wargaData.find(x => x.no === no);
+      if (!w) return;
+      document.getElementById('modal-warga-title').innerText = "Edit Data Warga";
+      document.getElementById('warga-id').value = w.no;
+      document.getElementById('form-warga-nama').value = w.nama;
+      document.getElementById('form-warga-blok').value = w.blok;
+      document.getElementById('form-warga-norumah').value = w.noRumah;
+      document.getElementById('form-warga-status').value = w.statusRumah;
+      document.getElementById('form-warga-hp').value = w.hp || "";
+      document.getElementById('modal-warga').classList.remove('hidden');
+    }
+
+    function saveWarga(e) {
+      e.preventDefault();
+      const id = document.getElementById('warga-id').value;
+      const nama = document.getElementById('form-warga-nama').value.trim();
+      const blok = document.getElementById('form-warga-blok').value.trim().toUpperCase();
+      const noRumah = document.getElementById('form-warga-norumah').value.trim();
+      const statusRumah = document.getElementById('form-warga-status').value;
+      const hp = document.getElementById('form-warga-hp').value.trim();
+
+      if (id) {
+        const item = wargaData.find(w => w.no === Number(id));
+        if (item) {
+          item.nama = nama;
+          item.blok = blok;
+          item.noRumah = noRumah;
+          item.statusRumah = statusRumah;
+          item.hp = hp;
+        }
+      } else {
+        const newNo = wargaData.length > 0 ? Math.max(...wargaData.map(w => w.no)) + 1 : 1;
+        wargaData.push({ no: newNo, nama, blok, noRumah, statusRumah, hp });
+      }
+
+      saveAll();
+      closeModal('modal-warga');
+      renderWargaTable();
+    }
+
+    function deleteWarga(no) {
+      if (confirm('Yakin ingin menghapus data warga nomor ' + no + '?')) {
+        wargaData = wargaData.filter(w => w.no !== no);
+        saveAll();
+        renderWargaTable();
+      }
+    }
+
+    function openModalAddKas() {
+      document.getElementById('form-kas-nominal').value = "";
+      document.getElementById('form-kas-keterangan').value = "";
+      document.getElementById('modal-kas').classList.remove('hidden');
+    }
+
+    function saveKas(e) {
+      e.preventDefault();
+      const tipe = document.querySelector('input[name="kas_tipe"]:checked').value;
+      const kategori = document.getElementById('form-kas-kategori').value;
+      const nominal = Number(document.getElementById('form-kas-nominal').value);
+      const keterangan = document.getElementById('form-kas-keterangan').value.trim();
+      const pencatat = document.getElementById('form-kas-pencatat').value.trim();
+
+      if (nominal > 0 && keterangan) {
+        kasData.push({
+          id: Date.now(),
+          tipe,
+          kategori,
+          nominal,
+          tanggal: new Date().toISOString().split('T')[0],
+          keterangan,
+          pencatat,
+          bukti: 'KAS-' + (tipe === 'MASUK' ? 'IN' : 'OUT') + '-' + Date.now().toString().slice(-4)
+        });
+        saveAll();
+        closeModal('modal-kas');
+        renderKasTable();
+        alert('Transaksi Kas berhasil disimpan!');
+      }
+    }
+
+    function deleteKas(id) {
+      if (confirm('Hapus transaksi kas ini?')) {
+        kasData = kasData.filter(k => k.id !== id);
+        saveAll();
+        renderKasTable();
+      }
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.add('hidden');
+    }
+
+    // INIT
+    window.onload = function() {
+      updateDashboardStats();
+    };
+  </script>
+</body>
+</html>
