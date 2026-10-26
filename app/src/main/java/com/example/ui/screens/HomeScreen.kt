@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.ReceiptLong
 import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Event
@@ -65,6 +66,7 @@ import com.example.ui.theme.GrisesGoldContainer
 import com.example.ui.theme.GrisesGoldPrimary
 import com.example.ui.theme.GrisesGreenContainer
 import com.example.ui.theme.GrisesGreenPrimary
+import com.example.ui.theme.GrisesOnGoldContainer
 import com.example.ui.theme.GrisesOnGreenContainer
 import com.example.ui.theme.GrisesTeal
 import com.example.ui.theme.GrisesTealContainer
@@ -161,6 +163,80 @@ fun HomeScreen(
       }
     }
 
+    // Asisten AI Feature Card (Gemini 3.8 Flash)
+    item {
+      Card(
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(
+          containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        modifier = Modifier
+          .fillMaxWidth()
+          .clickable { onNavigateToTab(1) } // Asisten AI Tab
+          .testTag("home_ai_assistant_card")
+      ) {
+        Row(
+          modifier = Modifier.padding(14.dp),
+          verticalAlignment = Alignment.CenterVertically
+        ) {
+          Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+              .size(46.dp)
+              .clip(RoundedCornerShape(12.dp))
+              .background(
+                Brush.linearGradient(
+                  colors = listOf(GrisesGreenPrimary, GrisesTeal)
+                )
+              )
+          ) {
+            Icon(
+              imageVector = Icons.Default.AutoAwesome,
+              contentDescription = null,
+              tint = Color(0xFFFFD54F),
+              modifier = Modifier.size(26.dp)
+            )
+          }
+          Spacer(modifier = Modifier.width(12.dp))
+          Column(modifier = Modifier.weight(1f)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+              Text(
+                text = "Asisten AI Paguyuban",
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurface
+              )
+              Spacer(modifier = Modifier.width(6.dp))
+              Surface(
+                shape = RoundedCornerShape(6.dp),
+                color = GrisesGoldContainer
+              ) {
+                Text(
+                  text = "Gemini AI",
+                  fontSize = 9.sp,
+                  fontWeight = FontWeight.ExtraBold,
+                  color = GrisesOnGoldContainer,
+                  modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp)
+                )
+              }
+            }
+            Text(
+              text = "Draf surat edaran, WA tagihan santun, & analisis kas",
+              fontSize = 11.sp,
+              color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+          }
+          Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+            contentDescription = null,
+            tint = GrisesGreenPrimary,
+            modifier = Modifier.size(18.dp)
+          )
+        }
+      }
+    }
+
     // Saldo Kas Real-Time Card
     item {
       Card(
@@ -171,7 +247,7 @@ fun HomeScreen(
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
         modifier = Modifier
           .fillMaxWidth()
-          .clickable { onNavigateToTab(3) } // Tab Kas
+          .clickable { onNavigateToTab(4) } // Tab Kas
           .testTag("kas_saldo_card")
       ) {
         Column(
@@ -273,7 +349,7 @@ fun HomeScreen(
           elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
           modifier = Modifier
             .weight(1f)
-            .clickable { onNavigateToTab(2) } // Jimpitan Tab
+            .clickable { onNavigateToTab(3) } // Jimpitan Tab
             .testTag("home_jimpitan_stat_card")
         ) {
           Column(modifier = Modifier.padding(14.dp)) {
@@ -330,7 +406,7 @@ fun HomeScreen(
           elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
           modifier = Modifier
             .weight(1f)
-            .clickable { onNavigateToTab(1) } // Iuran Tab
+            .clickable { onNavigateToTab(2) } // Iuran Tab
             .testTag("home_iuran_stat_card")
         ) {
           Column(modifier = Modifier.padding(14.dp)) {
@@ -406,28 +482,28 @@ fun HomeScreen(
           subtitle = "${wargaStats.first} KK",
           icon = Icons.Default.Group,
           color = GrisesGreenPrimary,
-          onClick = { onNavigateToTab(4) }
+          onClick = { onNavigateToTab(5) }
         )
         QuickActionButton(
           title = "Iuran & WA",
           subtitle = "Tagihan",
           icon = Icons.Default.NotificationsActive,
           color = Color(0xFF25D366),
-          onClick = { onNavigateToTab(1) }
+          onClick = { onNavigateToTab(2) }
         )
         QuickActionButton(
           title = "Jimpitan",
           subtitle = "Rp 500/hari",
           icon = Icons.Default.NightlightRound,
           color = GrisesGoldPrimary,
-          onClick = { onNavigateToTab(2) }
+          onClick = { onNavigateToTab(3) }
         )
         QuickActionButton(
           title = "Inventaris",
           subtitle = "Aset Perum",
           icon = Icons.Default.Inventory2,
           color = GrisesTeal,
-          onClick = { onNavigateToTab(5) }
+          onClick = { onNavigateToTab(6) }
         )
       }
     }
@@ -445,7 +521,7 @@ fun HomeScreen(
           fontSize = 15.sp,
           color = MaterialTheme.colorScheme.onSurface
         )
-        TextButton(onClick = { onNavigateToTab(6) }) {
+        TextButton(onClick = { onNavigateToTab(7) }) {
           Text(text = "Lihat Semua", color = GrisesGreenPrimary, fontSize = 12.sp)
         }
       }
@@ -458,7 +534,7 @@ fun HomeScreen(
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         modifier = Modifier
           .fillMaxWidth()
-          .clickable { onNavigateToTab(6) }
+          .clickable { onNavigateToTab(7) }
       ) {
         Row(
           modifier = Modifier.padding(14.dp),

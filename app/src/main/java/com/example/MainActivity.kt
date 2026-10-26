@@ -63,6 +63,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.material.icons.filled.AutoAwesome
+import com.example.ui.screens.AiAssistantScreen
+import com.example.util.configureAppCheck
 import com.example.ui.screens.AgendaScreen
 import com.example.ui.screens.HomeScreen
 import com.example.ui.screens.InventarisScreen
@@ -82,6 +85,8 @@ import com.example.ui.viewmodel.GrisesViewModel
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    // Configure Firebase App Check with launch intent before any UI or Firebase operations
+    configureAppCheck(this, intent)
     enableEdgeToEdge()
     setContent {
       MyApplicationTheme {
@@ -111,6 +116,7 @@ fun MainAppContent(viewModel: GrisesViewModel = viewModel()) {
 
   val navModules = listOf(
     NavModule("Beranda", Icons.Default.Home),
+    NavModule("Asisten AI", Icons.Default.AutoAwesome),
     NavModule("Iuran & WA", Icons.AutoMirrored.Filled.ReceiptLong),
     NavModule("Jimpitan", Icons.Default.NightlightRound),
     NavModule("Buku Kas", Icons.Default.AccountBalanceWallet),
@@ -280,13 +286,14 @@ fun MainAppContent(viewModel: GrisesViewModel = viewModel()) {
             viewModel = viewModel,
             onNavigateToTab = { currentTab = it }
           )
-          1 -> IuranScreen(viewModel = viewModel)
-          2 -> JimpitanScreen(viewModel = viewModel)
-          3 -> KasScreen(viewModel = viewModel)
-          4 -> WargaScreen(viewModel = viewModel)
-          5 -> InventarisScreen(viewModel = viewModel)
-          6 -> AgendaScreen(viewModel = viewModel)
-          7 -> WebDashboardScreen()
+          1 -> AiAssistantScreen(grisesViewModel = viewModel)
+          2 -> IuranScreen(viewModel = viewModel)
+          3 -> JimpitanScreen(viewModel = viewModel)
+          4 -> KasScreen(viewModel = viewModel)
+          5 -> WargaScreen(viewModel = viewModel)
+          6 -> InventarisScreen(viewModel = viewModel)
+          7 -> AgendaScreen(viewModel = viewModel)
+          8 -> WebDashboardScreen()
           else -> HomeScreen(
             viewModel = viewModel,
             onNavigateToTab = { currentTab = it }

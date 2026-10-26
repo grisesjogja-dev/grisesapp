@@ -80,4 +80,11 @@ class ExampleRobolectricTest {
     assertEquals("ROBY C", list[57].namaKK)
     assertEquals("15", list[57].noRumah)
   }
+
+  @Test
+  fun `configureAppCheck executes cleanly in local JVM test environment`() {
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    com.example.util.configureAppCheck(context, null)
+    assertTrue(true)
+  }
 }
