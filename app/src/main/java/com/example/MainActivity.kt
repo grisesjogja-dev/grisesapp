@@ -50,6 +50,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -104,13 +105,23 @@ data class NavModule(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainAppContent(viewModel: GrisesViewModel = viewModel()) {
+  var isWebModeActive by rememberSaveable { mutableStateOf(true) }
   var currentTab by rememberSaveable { mutableIntStateOf(0) }
   val isAdminMode by viewModel.isAdminMode.collectAsStateWithLifecycle()
 
-  // Handle Android system back button: return to Home (tab 0) if on secondary screens
-  if (currentTab != 0) {
-    BackHandler {
+  if (isWebModeActive) {
+    WebDashboardScreen(
+      onSwitchToNative = { isWebModeActive = false }
+    )
+    return
+  }
+
+  // Handle Android system back button: return to Home (tab 0) if on secondary screens, or back to Web mode
+  BackHandler {
+    if (currentTab != 0) {
       currentTab = 0
+    } else {
+      isWebModeActive = true
     }
   }
 
@@ -162,6 +173,34 @@ fun MainAppContent(viewModel: GrisesViewModel = viewModel()) {
           }
         },
         actions = {
+          // Quick Switcher to Versi Web
+          Surface(
+            shape = RoundedCornerShape(12.dp),
+            color = GrisesGreenContainer,
+            modifier = Modifier
+              .clickable { isWebModeActive = true }
+              .testTag("appbar_switch_to_web")
+          ) {
+            Row(
+              verticalAlignment = Alignment.CenterVertically,
+              modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+            ) {
+              Icon(
+                imageVector = Icons.Default.Public,
+                contentDescription = null,
+                tint = GrisesGreenPrimary,
+                modifier = Modifier.size(14.dp)
+              )
+              Spacer(modifier = Modifier.width(4.dp))
+              Text(
+                text = "Versi Web",
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Bold,
+                color = GrisesOnGreenContainer
+              )
+            }
+          }
+          Spacer(modifier = Modifier.width(6.dp))
           // Interactive quick role pill in AppBar
           Surface(
             shape = RoundedCornerShape(12.dp),
@@ -254,7 +293,13 @@ fun MainAppContent(viewModel: GrisesViewModel = viewModel()) {
             tonalElevation = if (isSelected) 2.dp else 0.dp,
             shadowElevation = if (isSelected) 1.dp else 0.dp,
             modifier = Modifier
-              .clickable { currentTab = index }
+              .clickable {
+                if (index == 8) {
+                  isWebModeActive = true
+                } else {
+                  currentTab = index
+                }
+              }
               .testTag("module_chip_$index")
           ) {
             Row(
@@ -293,7 +338,7 @@ fun MainAppContent(viewModel: GrisesViewModel = viewModel()) {
           5 -> WargaScreen(viewModel = viewModel)
           6 -> InventarisScreen(viewModel = viewModel)
           7 -> AgendaScreen(viewModel = viewModel)
-          8 -> WebDashboardScreen()
+          8 -> WebDashboardScreen(onSwitchToNative = { isWebModeActive = false })
           else -> HomeScreen(
             viewModel = viewModel,
             onNavigateToTab = { currentTab = it }
