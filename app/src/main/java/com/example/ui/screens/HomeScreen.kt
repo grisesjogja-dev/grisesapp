@@ -1,5 +1,6 @@
 package com.example.ui.screens
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,20 +26,26 @@ import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.MonetizationOn
 import androidx.compose.material.icons.filled.NightlightRound
 import androidx.compose.material.icons.filled.NotificationsActive
+import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.Savings
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.VerifiedUser
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -467,6 +474,51 @@ fun HomeScreen(
       }
     }
 
+    // Laporan Ringkasan Bulanan (PDF / Cetak) Card
+    item {
+      MonthlyReportCard(
+        kasSummary = kasSummary,
+        jimpitanSummary = jimpitanSummary,
+        iuranList = iuranList,
+        onPrintPdf = { onNavigateToTab(8) },
+        onShareWa = {
+          val paidCount = iuranList.count { it.isLunas }
+          val totalWajib = iuranList.size
+          val totalTerkumpul = iuranList.filter { it.isLunas }.sumOf { it.totalTagihan }
+          val totalTunggakan = iuranList.filter { !it.isLunas }.sumOf { it.totalTagihan }
+          val text = """
+            📋 *LAPORAN RINGKASAN KEUANGAN BULANAN*
+            *PAGUYUBAN WARGA PERUM GRIYA SEDAYU SELARAS (GRISES)*
+            RT 05 / RW 12, Kelurahan Argorejo, Sedayu, Bantul
+            📅 *Periode: Oktober 2026*
+            ───────────────────────
+            💵 *MUTASI KAS PAGUYUBAN*
+            • Total Pemasukan: ${formatRupiah(kasSummary.totalMasuk)}
+            • Total Pengeluaran: ${formatRupiah(kasSummary.totalKeluar)}
+            • Saldo Kas Saat Ini: ${formatRupiah(kasSummary.saldoSaatIni)}
+
+            📬 *REALISASI IURAN WARGA*
+            • Lunas: $paidCount / $totalWajib Rumah
+            • Terkumpul: ${formatRupiah(totalTerkumpul)}
+            • Sisa Tunggakan: ${formatRupiah(totalTunggakan)}
+
+            🪙 *JIMPITAN RONDA (Rp 500/hari)*
+            • Total Jimpitan Bulan Ini: ${formatRupiah(jimpitanSummary.totalBulanIni)}
+            • Hari Ini: ${formatRupiah(jimpitanSummary.totalHariIni)} (${jimpitanSummary.jumlahRumahHariIni} rumah)
+
+            Terima kasih atas kebersamaan dan transparansi seluruh warga GRISES.
+          """.trimIndent()
+          val sendIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, text)
+            type = "text/plain"
+          }
+          val shareIntent = Intent.createChooser(sendIntent, "Bagikan Laporan Bulanan GRISES")
+          context.startActivity(shareIntent)
+        }
+      )
+    }
+
     // Quick Menu Shortcuts
     item {
       Text(
@@ -636,5 +688,217 @@ fun QuickActionButton(
       fontSize = 10.sp,
       color = MaterialTheme.colorScheme.onSurfaceVariant
     )
+  }
+}
+
+@Composable
+fun MonthlyReportCard(
+  kasSummary: com.example.data.model.KasSummary,
+  jimpitanSummary: com.example.data.model.JimpitanSummary,
+  iuranList: List<com.example.data.model.IuranRecord>,
+  onPrintPdf: () -> Unit,
+  onShareWa: () -> Unit,
+  modifier: Modifier = Modifier
+) {
+  val paidIurans = iuranList.filter { it.isLunas }
+  val totalIurans = iuranList.size
+  val totalTerkumpul = paidIurans.sumOf { it.totalTagihan }
+  val iuranPct = if (totalIurans > 0) (paidIurans.size * 100) / totalIurans else 0
+  val netKas = kasSummary.totalMasuk - kasSummary.totalKeluar
+  val isSurplus = netKas >= 0
+
+  Card(
+    shape = RoundedCornerShape(20.dp),
+    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+    modifier = modifier
+      .fillMaxWidth()
+      .testTag("monthly_report_card")
+  ) {
+    Column(modifier = Modifier.padding(16.dp)) {
+      // Header
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+      ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+              .size(36.dp)
+              .clip(CircleShape)
+              .background(GrisesGreenContainer)
+          ) {
+            Icon(
+              imageVector = Icons.Default.Description,
+              contentDescription = null,
+              tint = GrisesGreenPrimary,
+              modifier = Modifier.size(20.dp)
+            )
+          }
+          Spacer(modifier = Modifier.width(10.dp))
+          Column {
+            Text(
+              text = "Laporan Ringkasan Bulanan",
+              fontWeight = FontWeight.Bold,
+              fontSize = 14.sp,
+              color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+              text = "Periode: Oktober 2026",
+              fontSize = 11.sp,
+              color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+          }
+        }
+
+        Surface(
+          shape = RoundedCornerShape(8.dp),
+          color = GrisesGreenContainer
+        ) {
+          Text(
+            text = "PDF / Cetak",
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Bold,
+            color = GrisesGreenPrimary,
+            modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp)
+          )
+        }
+      }
+
+      Spacer(modifier = Modifier.height(14.dp))
+
+      // 3 Summary Columns
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+      ) {
+        // Iuran
+        Column(
+          modifier = Modifier
+            .weight(1f)
+            .clip(RoundedCornerShape(12.dp))
+            .background(GrisesGreenContainer.copy(alpha = 0.5f))
+            .padding(8.dp)
+        ) {
+          Text(
+            text = "Iuran ($iuranPct%)",
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Bold,
+            color = GrisesGreenPrimary
+          )
+          Spacer(modifier = Modifier.height(3.dp))
+          Text(
+            text = formatRupiah(totalTerkumpul),
+            fontSize = 12.sp,
+            fontWeight = FontWeight.ExtraBold,
+            color = MaterialTheme.colorScheme.onSurface
+          )
+          Text(
+            text = "${paidIurans.size}/$totalIurans lunas",
+            fontSize = 9.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+          )
+        }
+
+        // Jimpitan
+        Column(
+          modifier = Modifier
+            .weight(1f)
+            .clip(RoundedCornerShape(12.dp))
+            .background(GrisesGoldContainer.copy(alpha = 0.5f))
+            .padding(8.dp)
+        ) {
+          Text(
+            text = "Jimpitan",
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Bold,
+            color = GrisesGoldPrimary
+          )
+          Spacer(modifier = Modifier.height(3.dp))
+          Text(
+            text = formatRupiah(jimpitanSummary.totalBulanIni),
+            fontSize = 12.sp,
+            fontWeight = FontWeight.ExtraBold,
+            color = MaterialTheme.colorScheme.onSurface
+          )
+          Text(
+            text = "Rp 500/hari",
+            fontSize = 9.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+          )
+        }
+
+        // Mutasi Kas
+        Column(
+          modifier = Modifier
+            .weight(1f)
+            .clip(RoundedCornerShape(12.dp))
+            .background(GrisesTealContainer.copy(alpha = 0.5f))
+            .padding(8.dp)
+        ) {
+          Text(
+            text = if (isSurplus) "Kas (Surplus)" else "Kas (Defisit)",
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Bold,
+            color = GrisesTeal
+          )
+          Spacer(modifier = Modifier.height(3.dp))
+          Text(
+            text = formatRupiah(kasSummary.saldoSaatIni),
+            fontSize = 12.sp,
+            fontWeight = FontWeight.ExtraBold,
+            color = MaterialTheme.colorScheme.onSurface
+          )
+          Text(
+            text = "Saldo akhir",
+            fontSize = 9.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+          )
+        }
+      }
+
+      Spacer(modifier = Modifier.height(14.dp))
+      HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+      Spacer(modifier = Modifier.height(12.dp))
+
+      // Action Buttons: Cetak PDF & Bagikan WA
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+      ) {
+        OutlinedButton(
+          onClick = onShareWa,
+          modifier = Modifier
+            .weight(1f)
+            .testTag("home_share_report_btn")
+        ) {
+          Icon(
+            imageVector = Icons.Default.Share,
+            contentDescription = null,
+            modifier = Modifier.size(16.dp)
+          )
+          Spacer(modifier = Modifier.width(6.dp))
+          Text("Bagikan WA", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+        }
+
+        Button(
+          onClick = onPrintPdf,
+          colors = ButtonDefaults.buttonColors(containerColor = GrisesGreenPrimary),
+          modifier = Modifier
+            .weight(1f)
+            .testTag("home_print_report_btn")
+        ) {
+          Icon(
+            imageVector = Icons.Default.Print,
+            contentDescription = null,
+            modifier = Modifier.size(16.dp)
+          )
+          Spacer(modifier = Modifier.width(6.dp))
+          Text("Cetak PDF", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+        }
+      }
+    }
   }
 }

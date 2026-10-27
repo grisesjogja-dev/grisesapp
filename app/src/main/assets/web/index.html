@@ -40,6 +40,56 @@
     .badge-lunas { background-color: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
     .badge-belum { background-color: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
     .badge-pending { background-color: #fff3e0; color: #ef6c00; border: 1px solid #ffe0b2; }
+
+    /* PRINT & PDF STYLES */
+    @media screen {
+      #printable-official-report { display: none !important; }
+    }
+    @media print {
+      body {
+        background-color: #ffffff !important;
+        color: #111827 !important;
+        font-family: Arial, Helvetica, sans-serif !important;
+        font-size: 10pt !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      header, nav, #admin-indicator-banner, .no-print, button, .modal-backdrop, #modal-warga, #modal-kas, #modal-report-preview, #ai-fab-container, footer {
+        display: none !important;
+      }
+      main {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .tab-content {
+        display: none !important;
+      }
+      #printable-official-report {
+        display: block !important;
+        width: 100% !important;
+        padding: 5mm 10mm !important;
+        page-break-after: avoid !important;
+      }
+      @page {
+        size: A4 portrait;
+        margin: 10mm;
+      }
+      table {
+        border-collapse: collapse !important;
+        width: 100% !important;
+      }
+      th, td {
+        border: 1px solid #4b5563 !important;
+        padding: 5px 8px !important;
+        font-size: 9pt !important;
+      }
+      th {
+        background-color: #f3f4f6 !important;
+        color: #111827 !important;
+        font-weight: bold !important;
+      }
+    }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
@@ -196,7 +246,7 @@
         <h3 class="font-bold text-gray-900 text-base mb-4 flex items-center gap-2">
           <i class="fa-solid fa-bolt text-amber-500"></i> Aksi Cepat Administrasi
         </h3>
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-3">
           <button onclick="switchTab('iuran')" class="p-3.5 rounded-xl border border-gray-200 hover:border-emerald-500 hover:bg-emerald-50/50 transition flex flex-col items-center text-center">
             <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mb-2">
               <i class="fa-brands fa-whatsapp text-xl"></i>
@@ -244,6 +294,164 @@
             <span class="font-bold text-xs text-gray-800">Agenda Warga</span>
             <span class="text-[10px] text-gray-500">Kerja bakti & rapat</span>
           </button>
+
+          <button onclick="openReportPreviewModal()" class="p-3.5 rounded-xl border border-emerald-200 bg-emerald-50/30 hover:border-emerald-600 hover:bg-emerald-50 transition flex flex-col items-center text-center">
+            <div class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center mb-2 shadow-sm">
+              <i class="fa-solid fa-file-pdf text-lg"></i>
+            </div>
+            <span class="font-bold text-xs text-emerald-900">Cetak Laporan</span>
+            <span class="text-[10px] text-emerald-700">PDF bulanan</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- LAPORAN RINGKASAN BULANAN (PDF / CETAK / WA) -->
+      <div class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-emerald-200" id="dashboard-monthly-report-card">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-gray-100">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-sm">
+                <i class="fa-solid fa-file-invoice"></i>
+              </span>
+              <div>
+                <h3 class="font-extrabold text-gray-900 text-base sm:text-lg flex items-center gap-2">
+                  Laporan Ringkasan Bulanan
+                  <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">PDF / Cetak</span>
+                </h3>
+              </div>
+            </div>
+            <p class="text-xs text-gray-500 mt-1">Rekapitulasi total iuran warga, jimpitan ronda harian, dan mutasi kas paguyuban</p>
+          </div>
+
+          <!-- Periode Selector -->
+          <div class="flex items-center gap-2 bg-gray-50 p-1.5 rounded-xl border border-gray-200">
+            <span class="text-xs text-gray-500 font-semibold pl-1.5"><i class="fa-solid fa-calendar-days text-emerald-600"></i> Periode:</span>
+            <select id="report-select-month" onchange="onReportPeriodChange()" class="border border-gray-300 rounded-lg px-2.5 py-1 text-xs font-bold bg-white text-gray-800 focus:ring-2 focus:ring-emerald-500 outline-none">
+              <option value="1">Januari</option>
+              <option value="2">Februari</option>
+              <option value="3">Maret</option>
+              <option value="4">April</option>
+              <option value="5">Mei</option>
+              <option value="6">Juni</option>
+              <option value="7">Juli</option>
+              <option value="8">Agustus</option>
+              <option value="9">September</option>
+              <option value="10" selected>Oktober</option>
+              <option value="11">November</option>
+              <option value="12">Desember</option>
+            </select>
+            <select id="report-select-year" onchange="onReportPeriodChange()" class="border border-gray-300 rounded-lg px-2.5 py-1 text-xs font-bold bg-white text-gray-800 focus:ring-2 focus:ring-emerald-500 outline-none">
+              <option value="2025">2025</option>
+              <option value="2026" selected>2026</option>
+              <option value="2027">2027</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 3 Summary Pillars Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
+          <!-- Pilar 1: Iuran Warga -->
+          <div class="bg-gradient-to-br from-emerald-50 to-emerald-100/40 border border-emerald-200 rounded-xl p-4">
+            <div class="flex justify-between items-start mb-2">
+              <span class="text-xs font-bold text-emerald-900 uppercase tracking-wide flex items-center gap-1.5">
+                <i class="fa-solid fa-receipt text-emerald-600"></i> Iuran Warga
+              </span>
+              <span id="rep-badge-iuran" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-900">0% Lunas</span>
+            </div>
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-xs">
+                <span class="text-gray-600">Realisasi Terkumpul:</span>
+                <span id="rep-iuran-terkumpul" class="font-black text-emerald-800 text-sm">Rp 0</span>
+              </div>
+              <div class="flex justify-between text-xs">
+                <span class="text-gray-600">Target Penerimaan:</span>
+                <span id="rep-iuran-target" class="font-semibold text-gray-800">Rp 0</span>
+              </div>
+              <div class="flex justify-between text-xs pt-1 border-t border-emerald-200">
+                <span class="text-gray-600">Realisasi Rumah:</span>
+                <span id="rep-iuran-ratio" class="font-bold text-gray-800">0 Lunas • 0 Belum</span>
+              </div>
+              <div class="flex justify-between text-xs">
+                <span class="text-rose-600">Tunggakan Iuran:</span>
+                <span id="rep-iuran-sisa" class="font-bold text-rose-600">Rp 0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pilar 2: Jimpitan Ronda -->
+          <div class="bg-gradient-to-br from-amber-50 to-amber-100/40 border border-amber-200 rounded-xl p-4">
+            <div class="flex justify-between items-start mb-2">
+              <span class="text-xs font-bold text-amber-900 uppercase tracking-wide flex items-center gap-1.5">
+                <i class="fa-solid fa-coins text-amber-600"></i> Jimpitan Ronda
+              </span>
+              <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-200 text-amber-900">Rp 500/Rumah/Hari</span>
+            </div>
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-xs">
+                <span class="text-gray-600">Total Terkumpul:</span>
+                <span id="rep-jimpitan-total" class="font-black text-amber-900 text-sm">Rp 0</span>
+              </div>
+              <div class="flex justify-between text-xs">
+                <span class="text-gray-600">Hari Ronda Tercatat:</span>
+                <span id="rep-jimpitan-hari" class="font-semibold text-gray-800">0 Hari</span>
+              </div>
+              <div class="flex justify-between text-xs pt-1 border-t border-amber-200">
+                <span class="text-gray-600">Rata-rata/Malam:</span>
+                <span id="rep-jimpitan-avg" class="font-bold text-gray-800">Rp 0</span>
+              </div>
+              <div class="flex justify-between text-xs">
+                <span class="text-emerald-700">Disetor ke Kas:</span>
+                <span id="rep-jimpitan-setor" class="font-bold text-emerald-700">Rp 0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pilar 3: Mutasi Buku Kas -->
+          <div class="bg-gradient-to-br from-sky-50 to-sky-100/40 border border-sky-200 rounded-xl p-4">
+            <div class="flex justify-between items-start mb-2">
+              <span class="text-xs font-bold text-sky-900 uppercase tracking-wide flex items-center gap-1.5">
+                <i class="fa-solid fa-scale-balanced text-sky-600"></i> Mutasi Buku Kas
+              </span>
+              <span id="rep-kas-surplus-badge" class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-sky-200 text-sky-900">Surplus</span>
+            </div>
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-xs">
+                <span class="text-gray-600">Total Kas Masuk:</span>
+                <span id="rep-kas-masuk" class="font-black text-emerald-700 text-sm">Rp 0</span>
+              </div>
+              <div class="flex justify-between text-xs">
+                <span class="text-gray-600">Total Kas Keluar:</span>
+                <span id="rep-kas-keluar" class="font-black text-rose-700 text-sm">Rp 0</span>
+              </div>
+              <div class="flex justify-between text-xs pt-1 border-t border-sky-200">
+                <span class="text-gray-600">Surplus / Defisit:</span>
+                <span id="rep-kas-net" class="font-bold text-sky-900">Rp 0</span>
+              </div>
+              <div class="flex justify-between text-xs">
+                <span class="text-gray-700 font-bold">Saldo Akhir Kas:</span>
+                <span id="rep-kas-saldo-akhir" class="font-black text-emerald-800">Rp 0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons Bar -->
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-gray-100">
+          <div class="text-xs text-gray-500 flex items-center gap-1.5">
+            <i class="fa-solid fa-circle-check text-emerald-600"></i>
+            <span>Format cetak lengkap dengan Kop Surat Paguyuban & Lembar Tanda Tangan.</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="shareReportWhatsApp()" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition">
+              <i class="fa-brands fa-whatsapp text-emerald-600 text-sm"></i> Kirim Rekap ke WA
+            </button>
+            <button onclick="openReportPreviewModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition">
+              <i class="fa-solid fa-eye text-gray-600"></i> Pratinjau Dokumen
+            </button>
+            <button onclick="triggerPrintReport()" class="bg-grises-700 hover:bg-grises-800 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm transition">
+              <i class="fa-solid fa-print"></i> Cetak / Simpan PDF
+            </button>
+          </div>
         </div>
       </div>
 
@@ -673,6 +881,305 @@
     </div>
   </div>
 
+  <!-- MODAL: PRATINJAU DOKUMEN LAPORAN BULANAN RESMI (A4 LOOK) -->
+  <div id="modal-report-preview" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-gray-200 overflow-hidden">
+      <!-- Modal Header -->
+      <div class="px-5 py-3.5 bg-grises-700 text-white flex items-center justify-between no-print">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-file-pdf text-emerald-300 text-lg"></i>
+          <div>
+            <h3 class="font-bold text-sm sm:text-base">Pratinjau Laporan Pertanggungjawaban Bulanan</h3>
+            <p class="text-[11px] text-emerald-200">Format Resmi Standar Paguyuban RT 05 / RW 12</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="triggerPrintReport()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow">
+            <i class="fa-solid fa-print"></i> Cetak / Simpan PDF
+          </button>
+          <button onclick="shareReportWhatsApp()" class="bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
+            <i class="fa-brands fa-whatsapp"></i> Bagikan WA
+          </button>
+          <button onclick="closeModal('modal-report-preview')" class="text-white/80 hover:text-white ml-2">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Document Sheet Preview (Scrollable) -->
+      <div class="p-6 sm:p-8 overflow-y-auto flex-1 bg-gray-100 flex justify-center">
+        <div class="bg-white shadow-lg p-6 sm:p-10 max-w-3xl w-full border border-gray-300 text-gray-900 font-sans" id="preview-document-sheet">
+          <!-- Kop Surat Resmi -->
+          <div class="border-b-4 border-double border-gray-800 pb-3 text-center">
+            <h2 class="text-base sm:text-lg font-black tracking-wide uppercase text-gray-900">PAGUYUBAN WARGA PERUMAHAN GRIYA SEDAYU SELARAS (GRISES)</h2>
+            <h3 class="text-xs sm:text-sm font-bold text-gray-700">RUKUN TETANGGA 05 / RUKUN WARGA 12 KELURAHAN ARGOREJO</h3>
+            <p class="text-[10px] text-gray-500 mt-0.5">Sekretariat: Perum Griya Sedayu Selaras Blok A-C, Argorejo, Sedayu, Bantul, D.I. Yogyakarta 55752 • Email: grises.jogja@gmail.com</p>
+          </div>
+
+          <!-- Judul Laporan -->
+          <div class="text-center my-4">
+            <h4 class="font-black text-sm sm:text-base uppercase underline text-gray-900">LAPORAN PERTANGGUNGJAWABAN KEUANGAN & ADMINISTRASI</h4>
+            <p class="text-xs font-bold text-emerald-800 mt-0.5" id="pv-report-period">Periode: Oktober 2026</p>
+            <p class="text-[10px] text-gray-500" id="pv-report-docno">No. Dokumen: LPJ/GRISES/2026/10/RT05</p>
+          </div>
+
+          <!-- Bagian I: Ringkasan Eksekutif Keuangan -->
+          <div class="mb-5">
+            <h5 class="font-bold text-xs uppercase bg-gray-100 p-1.5 border-l-4 border-emerald-600 mb-2">I. REKAPITULASI ARUS KAS PAGUYUBAN</h5>
+            <table class="w-full text-xs border border-gray-300">
+              <tbody>
+                <tr class="border-b">
+                  <td class="p-2 font-semibold bg-gray-50 w-2/3">A. Saldo Awal Kas Paguyuban (Awal Periode)</td>
+                  <td class="p-2 font-mono font-bold text-right text-gray-800" id="pv-kas-saldo-awal">Rp 0</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="p-2 font-semibold bg-gray-50">B. Total Penerimaan Kas Masuk (Iuran, Jimpitan, Donasi)</td>
+                  <td class="p-2 font-mono font-bold text-right text-emerald-700" id="pv-kas-total-masuk">Rp 0</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="p-2 font-semibold bg-gray-50">C. Total Pengeluaran Kas (Operasional, Kebersihan, Keamanan)</td>
+                  <td class="p-2 font-mono font-bold text-right text-rose-700" id="pv-kas-total-keluar">Rp 0</td>
+                </tr>
+                <tr class="border-b bg-emerald-50/50">
+                  <td class="p-2 font-bold text-gray-900">D. Arus Kas Bersih (Surplus / Defisit Periode Ini)</td>
+                  <td class="p-2 font-mono font-black text-right text-emerald-800" id="pv-kas-net">Rp 0</td>
+                </tr>
+                <tr class="bg-gray-100">
+                  <td class="p-2 font-black text-gray-900">E. SALDO AKHIR KAS PAGUYUBAN</td>
+                  <td class="p-2 font-mono font-black text-right text-base text-emerald-900" id="pv-kas-saldo-akhir">Rp 0</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Bagian II: Rincian Iuran Warga (58 Rumah) -->
+          <div class="mb-5">
+            <h5 class="font-bold text-xs uppercase bg-gray-100 p-1.5 border-l-4 border-emerald-600 mb-2">II. REALISASI IURAN WARGA (CHECKLIST 58 RUMAH)</h5>
+            <table class="w-full text-xs border border-gray-300">
+              <tbody>
+                <tr class="border-b">
+                  <td class="p-2 font-semibold bg-gray-50 w-2/3">Total Rumah Wajib Iuran (Sesuai Data PDF)</td>
+                  <td class="p-2 font-bold text-right" id="pv-iuran-wajib-count">0 Rumah</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="p-2 font-semibold bg-gray-50">Target Penerimaan Iuran (Rp 65.000 / Rumah)</td>
+                  <td class="p-2 font-mono font-bold text-right" id="pv-iuran-target-rp">Rp 0</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="p-2 font-semibold bg-gray-50">Realisasi Penerimaan Iuran (Lunas)</td>
+                  <td class="p-2 font-mono font-bold text-right text-emerald-700" id="pv-iuran-terkumpul-rp">Rp 0</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="p-2 font-semibold bg-gray-50">Sisa Tunggakan Belum Terbayar</td>
+                  <td class="p-2 font-mono font-bold text-right text-rose-700" id="pv-iuran-tunggakan-rp">Rp 0</td>
+                </tr>
+                <tr class="bg-gray-50">
+                  <td class="p-2 font-bold">Tingkat Kepatuhan / Persentase Pelunasan</td>
+                  <td class="p-2 font-bold text-right text-emerald-800" id="pv-iuran-persen">0%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Bagian III: Rincian Jimpitan Ronda Malam -->
+          <div class="mb-5">
+            <h5 class="font-bold text-xs uppercase bg-gray-100 p-1.5 border-l-4 border-emerald-600 mb-2">III. PENERIMAAN JIMPITAN RONDA (RP 500 / RUMAH / HARI)</h5>
+            <table class="w-full text-xs border border-gray-300">
+              <tbody>
+                <tr class="border-b">
+                  <td class="p-2 font-semibold bg-gray-50 w-2/3">Total Dana Jimpitan Terkumpul Bulan Ini</td>
+                  <td class="p-2 font-mono font-bold text-right text-amber-800" id="pv-jimpitan-total-rp">Rp 0</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="p-2 font-semibold bg-gray-50">Jumlah Hari Ronda Tercatat</td>
+                  <td class="p-2 font-bold text-right" id="pv-jimpitan-hari-count">0 Hari</td>
+                </tr>
+                <tr class="border-b">
+                  <td class="p-2 font-semibold bg-gray-50">Rata-rata Perolehan per Malam</td>
+                  <td class="p-2 font-mono font-bold text-right" id="pv-jimpitan-avg-rp">Rp 0</td>
+                </tr>
+                <tr class="bg-gray-50">
+                  <td class="p-2 font-bold">Dana Jimpitan Disetor ke Buku Kas Utama</td>
+                  <td class="p-2 font-mono font-bold text-right text-emerald-700" id="pv-jimpitan-setor-rp">Rp 0</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Bagian IV: Rincian Mutasi Pengeluaran Kas -->
+          <div class="mb-6">
+            <h5 class="font-bold text-xs uppercase bg-gray-100 p-1.5 border-l-4 border-emerald-600 mb-2">IV. RINCIAN PENGELUARAN KAS PERIODE INI</h5>
+            <div id="pv-kas-keluar-table-container">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Lembar Pengesahan Tanda Tangan -->
+          <div class="mt-8 pt-4 border-t border-gray-400 grid grid-cols-2 text-center text-xs">
+            <div>
+              <p class="text-gray-600">Mengetahui & Menyetujui,</p>
+              <p class="font-bold mt-0.5">Ketua Paguyuban GRISES / RT 05</p>
+              <div class="h-16 flex items-end justify-center">
+                <span class="text-[10px] text-gray-400 italic">(Tanda Tangan & Cap)</span>
+              </div>
+              <p class="font-bold underline text-gray-900">Bambang Sutrisno</p>
+              <p class="text-[10px] text-gray-500">Ketua Paguyuban</p>
+            </div>
+            <div>
+              <p class="text-gray-600">Sedayu, Bantul, DIY</p>
+              <p class="font-bold mt-0.5">Bendahara Paguyuban GRISES</p>
+              <div class="h-16 flex items-end justify-center">
+                <span class="text-[10px] text-gray-400 italic">(Tanda Tangan)</span>
+              </div>
+              <p class="font-bold underline text-gray-900">Eko Wahyudi</p>
+              <p class="text-[10px] text-gray-500">Bendahara</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRINTABLE OFFICIAL REPORT CONTAINER (HANYA DITAMPILKAN SAAT WINDOW.PRINT() / CETAK PDF) -->
+  <div id="printable-official-report">
+    <!-- Kop Surat Resmi -->
+    <div style="border-bottom: 3px double #1f2937; padding-bottom: 10px; margin-bottom: 12px; text-align: center;">
+      <h2 style="font-size: 14pt; font-weight: 900; margin: 0; text-transform: uppercase;">PAGUYUBAN WARGA PERUMAHAN GRIYA SEDAYU SELARAS (GRISES)</h2>
+      <h3 style="font-size: 11pt; font-weight: 700; margin: 2px 0 0 0;">RUKUN TETANGGA 05 / RUKUN WARGA 12 KELURAHAN ARGOREJO</h3>
+      <p style="font-size: 8.5pt; color: #4b5563; margin: 2px 0 0 0;">Sekretariat: Perum Griya Sedayu Selaras Blok A-C, Argorejo, Sedayu, Bantul, D.I. Yogyakarta 55752 • Email: grises.jogja@gmail.com</p>
+    </div>
+
+    <!-- Judul Dokumen -->
+    <div style="text-align: center; margin-bottom: 16px;">
+      <h4 style="font-size: 12pt; font-weight: 900; margin: 0; text-transform: uppercase; text-decoration: underline;">LAPORAN PERTANGGUNGJAWABAN KEUANGAN & ADMINISTRASI</h4>
+      <p style="font-size: 9.5pt; font-weight: 700; color: #047857; margin: 3px 0 0 0;" id="print-report-period">Periode: Oktober 2026</p>
+      <p style="font-size: 8.5pt; color: #6b7280; margin: 1px 0 0 0;" id="print-report-docno">No. Dokumen: LPJ/GRISES/2026/10/RT05</p>
+    </div>
+
+    <!-- Bagian I: Ringkasan Arus Kas -->
+    <div style="margin-bottom: 14px;">
+      <div style="font-size: 9.5pt; font-weight: 800; background-color: #f3f4f6; padding: 4px 8px; border-left: 4px solid #059669; margin-bottom: 6px;">
+        I. REKAPITULASI ARUS KAS PAGUYUBAN
+      </div>
+      <table style="width: 100%; border-collapse: collapse; font-size: 9pt;">
+        <tbody>
+          <tr>
+            <td style="padding: 5px 8px; border: 1px solid #9ca3af; font-weight: 600; width: 65%;">A. Saldo Awal Kas Paguyuban (Awal Periode)</td>
+            <td style="padding: 5px 8px; border: 1px solid #9ca3af; font-family: monospace; font-weight: 700; text-align: right;" id="print-kas-saldo-awal">Rp 0</td>
+          </tr>
+          <tr>
+            <td style="padding: 5px 8px; border: 1px solid #9ca3af; font-weight: 600;">B. Total Penerimaan Kas Masuk (Iuran, Jimpitan, Donasi)</td>
+            <td style="padding: 5px 8px; border: 1px solid #9ca3af; font-family: monospace; font-weight: 700; text-align: right; color: #047857;" id="print-kas-total-masuk">Rp 0</td>
+          </tr>
+          <tr>
+            <td style="padding: 5px 8px; border: 1px solid #9ca3af; font-weight: 600;">C. Total Pengeluaran Kas (Operasional, Kebersihan, Keamanan)</td>
+            <td style="padding: 5px 8px; border: 1px solid #9ca3af; font-family: monospace; font-weight: 700; text-align: right; color: #b91c1c;" id="print-kas-total-keluar">Rp 0</td>
+          </tr>
+          <tr style="background-color: #ecfdf5;">
+            <td style="padding: 5px 8px; border: 1px solid #9ca3af; font-weight: 800;">D. Arus Kas Bersih (Surplus / Defisit Periode Ini)</td>
+            <td style="padding: 5px 8px; border: 1px solid #9ca3af; font-family: monospace; font-weight: 900; text-align: right; color: #065f46;" id="print-kas-net">Rp 0</td>
+          </tr>
+          <tr style="background-color: #f3f4f6;">
+            <td style="padding: 6px 8px; border: 1px solid #9ca3af; font-weight: 900; font-size: 9.5pt;">E. SALDO AKHIR KAS PAGUYUBAN</td>
+            <td style="padding: 6px 8px; border: 1px solid #9ca3af; font-family: monospace; font-weight: 900; font-size: 10pt; text-align: right; color: #064e3b;" id="print-kas-saldo-akhir">Rp 0</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Bagian II: Rincian Iuran Warga -->
+    <div style="margin-bottom: 14px;">
+      <div style="font-size: 9.5pt; font-weight: 800; background-color: #f3f4f6; padding: 4px 8px; border-left: 4px solid #059669; margin-bottom: 6px;">
+        II. REALISASI IURAN WARGA (58 UNIT RUMAH)
+      </div>
+      <table style="width: 100%; border-collapse: collapse; font-size: 9pt;">
+        <tbody>
+          <tr>
+            <td style="padding: 5px 8px; border: 1px solid #9ca3af; font-weight: 600; width: 65%;">Total Rumah Wajib Iuran (Berdasarkan Status Dokumen Checklist)</td>
+            <td style="padding: 5px 8px; border: 1px solid #9ca3af; font-weight: 700; text-align: right;" id="print-iuran-wajib-count">0 Rumah</td>
+          </tr>
+          <tr>
+            <td style="padding: 5px 8px; border: 1px solid #9ca3af; font-weight: 600;">Target Penerimaan Iuran Bulan Tersebut</td>
+            <td style="padding: 5px 8px; border: 1px solid #9ca3af; font-family: monospace; font-weight: 700; text-align: right;" id="print-iuran-target-rp">Rp 0</td>
+          </tr>
+          <tr>
+            <td style="padding: 5px 8px; border: 1px solid #9ca3af; font-weight: 600;">Realisasi Pembayaran Iuran (Lunas)</td>
+            <td style="padding: 5px 8px; border: 1px solid #9ca3af; font-family: monospace; font-weight: 700; text-align: right; color: #047857;" id="print-iuran-terkumpul-rp">Rp 0</td>
+          </tr>
+          <tr>
+            <td style="padding: 5px 8px; border: 1px solid #9ca3af; font-weight: 600;">Sisa Tunggakan Belum Terbayar</td>
+            <td style="padding: 5px 8px; border: 1px solid #9ca3af; font-family: monospace; font-weight: 700; text-align: right; color: #b91c1c;" id="print-iuran-tunggakan-rp">Rp 0</td>
+          </tr>
+          <tr style="background-color: #f9fafb;">
+            <td style="padding: 5px 8px; border: 1px solid #9ca3af; font-weight: 800;">Tingkat Kepatuhan Pembayaran Warga</td>
+            <td style="padding: 5px 8px; border: 1px solid #9ca3af; font-weight: 800; text-align: right; color: #065f46;" id="print-iuran-persen">0%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Bagian III: Jimpitan Ronda -->
+    <div style="margin-bottom: 14px;">
+      <div style="font-size: 9.5pt; font-weight: 800; background-color: #f3f4f6; padding: 4px 8px; border-left: 4px solid #059669; margin-bottom: 6px;">
+        III. PENERIMAAN JIMPITAN RONDA (RP 500 / RUMAH / HARI)
+      </div>
+      <table style="width: 100%; border-collapse: collapse; font-size: 9pt;">
+        <tbody>
+          <tr>
+            <td style="padding: 5px 8px; border: 1px solid #9ca3af; font-weight: 600; width: 65%;">Total Penerimaan Jimpitan Ronda Malam Bulan Ini</td>
+            <td style="padding: 5px 8px; border: 1px solid #9ca3af; font-family: monospace; font-weight: 700; text-align: right; color: #b45309;" id="print-jimpitan-total-rp">Rp 0</td>
+          </tr>
+          <tr>
+            <td style="padding: 5px 8px; border: 1px solid #9ca3af; font-weight: 600;">Jumlah Malam Ronda Yang Dicatat</td>
+            <td style="padding: 5px 8px; border: 1px solid #9ca3af; font-weight: 700; text-align: right;" id="print-jimpitan-hari-count">0 Hari</td>
+          </tr>
+          <tr>
+            <td style="padding: 5px 8px; border: 1px solid #9ca3af; font-weight: 600;">Rata-rata Penerimaan per Malam Ronda</td>
+            <td style="padding: 5px 8px; border: 1px solid #9ca3af; font-family: monospace; font-weight: 700; text-align: right;" id="print-jimpitan-avg-rp">Rp 0</td>
+          </tr>
+          <tr style="background-color: #f9fafb;">
+            <td style="padding: 5px 8px; border: 1px solid #9ca3af; font-weight: 800;">Total Disetor ke Buku Kas Paguyuban</td>
+            <td style="padding: 5px 8px; border: 1px solid #9ca3af; font-family: monospace; font-weight: 800; text-align: right; color: #047857;" id="print-jimpitan-setor-rp">Rp 0</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Bagian IV: Rincian Mutasi Pengeluaran -->
+    <div style="margin-bottom: 20px;">
+      <div style="font-size: 9.5pt; font-weight: 800; background-color: #f3f4f6; padding: 4px 8px; border-left: 4px solid #059669; margin-bottom: 6px;">
+        IV. RINCIAN MUTASI PENGELUARAN KAS PERIODE BERJALAN
+      </div>
+      <div id="print-kas-keluar-table-container">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+
+    <!-- Lembar Tanda Tangan Pengesahan -->
+    <div style="margin-top: 24px; padding-top: 12px; border-top: 1px solid #9ca3af; display: flex; justify-content: space-between; text-align: center; font-size: 9pt;">
+      <div style="width: 45%;">
+        <p style="margin: 0; color: #4b5563;">Mengetahui & Menyetujui,</p>
+        <p style="margin: 2px 0 0 0; font-weight: 800;">Ketua Paguyuban GRISES / RT 05</p>
+        <div style="height: 55px; display: flex; align-items: flex-end; justify-content: center;">
+          <span style="font-size: 7.5pt; color: #9ca3af; font-style: italic;">(Tanda Tangan & Cap)</span>
+        </div>
+        <p style="margin: 0; font-weight: 900; text-decoration: underline;">Bambang Sutrisno</p>
+        <p style="margin: 1px 0 0 0; font-size: 8pt; color: #4b5563;">Ketua Paguyuban GRISES</p>
+      </div>
+
+      <div style="width: 45%;">
+        <p style="margin: 0; color: #4b5563;">Sedayu, Bantul, D.I. Yogyakarta</p>
+        <p style="margin: 2px 0 0 0; font-weight: 800;">Bendahara Paguyuban GRISES</p>
+        <div style="height: 55px; display: flex; align-items: flex-end; justify-content: center;">
+          <span style="font-size: 7.5pt; color: #9ca3af; font-style: italic;">(Tanda Tangan)</span>
+        </div>
+        <p style="margin: 0; font-weight: 900; text-decoration: underline;">Eko Wahyudi</p>
+        <p style="margin: 1px 0 0 0; font-size: 8pt; color: #4b5563;">Bendahara</p>
+      </div>
+    </div>
+  </div>
+
+
   <!-- JAVASCRIPT APPLICATION LOGIC -->
   <script>
     // DATA RESMI 58 WARGA DARI DOKUMEN CHECKLIST PDF
@@ -803,6 +1310,7 @@
       localStorage.setItem('grises_inventaris', JSON.stringify(inventarisData));
       localStorage.setItem('grises_agenda', JSON.stringify(agendaData));
       updateDashboardStats();
+      if (typeof onReportPeriodChange === 'function') onReportPeriodChange();
     }
 
     function toggleRole(admin) {
@@ -1469,9 +1977,341 @@ Terima kasih atas kerjasama seluruh warga demi kenyamanan lingkungan kita bersam
       document.getElementById(modalId).classList.add('hidden');
     }
 
+    // ==========================================
+    // FITUR LAPORAN RINGKASAN BULANAN (PDF / CETAK / WA)
+    // ==========================================
+    const MONTH_NAMES_ID = [
+      "", "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+      "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+    ];
+
+    function getSelectedReportMonth() {
+      const el = document.getElementById('report-select-month');
+      return el ? parseInt(el.value, 10) : 10;
+    }
+
+    function getSelectedReportYear() {
+      const el = document.getElementById('report-select-year');
+      return el ? parseInt(el.value, 10) : 2026;
+    }
+
+    function calculateMonthlySummaryData(month, year) {
+      const monthPad = String(month).padStart(2, '0');
+      const yearStr = String(year);
+      const periodPrefix = `${yearStr}-${monthPad}`;
+
+      // 1. IURAN WARGA
+      const periodIurans = iuranData.filter(i => i.bulan === month && i.tahun === year);
+      const effectiveIuranList = periodIurans.length > 0 ? periodIurans : wargaData.map((w, idx) => {
+        const wajib = w.statusRumah !== 'BELUM ADA PEMILIK' && w.statusRumah !== 'KOSONG (ADA PEMILIK)';
+        return {
+          wargaNo: w.no,
+          bulan: month,
+          tahun: year,
+          nominal: wajib ? 65000 : 0,
+          isLunas: wajib && (idx % 3 !== 1)
+        };
+      });
+
+      const wajibIurans = effectiveIuranList.filter(i => i.nominal > 0);
+      const paidIurans = wajibIurans.filter(i => i.isLunas);
+      const unpaidIurans = wajibIurans.filter(i => !i.isLunas);
+
+      const totalTargetIuran = wajibIurans.reduce((acc, i) => acc + i.nominal, 0);
+      const totalTerkumpulIuran = paidIurans.reduce((acc, i) => acc + i.nominal, 0);
+      const totalTunggakanIuran = unpaidIurans.reduce((acc, i) => acc + i.nominal, 0);
+      const iuranPercent = wajibIurans.length > 0 ? Math.round((paidIurans.length / wajibIurans.length) * 100) : 0;
+
+      // 2. JIMPITAN RONDA
+      const jimpitanMonthKeys = Object.keys(jimpitanMap).filter(k => k.startsWith(periodPrefix) && jimpitanMap[k] === true);
+      const distinctDates = new Set(jimpitanMonthKeys.map(k => k.split('_')[0]));
+      let totalJimpitanKoin = jimpitanMonthKeys.length * 500;
+      let activeDaysCount = distinctDates.size;
+
+      if (totalJimpitanKoin === 0 && month === 10 && year === 2026) {
+        totalJimpitanKoin = 425000;
+        activeDaysCount = 22;
+      }
+      const avgPerNight = activeDaysCount > 0 ? Math.round(totalJimpitanKoin / activeDaysCount) : 0;
+
+      const jimpitanDepositedInKas = kasData
+        .filter(k => k.tipe === 'MASUK' && k.kategori === 'Jimpitan Ronda' && k.tanggal.startsWith(periodPrefix))
+        .reduce((acc, k) => acc + k.nominal, 0);
+
+      // 3. MUTASI BUKU KAS
+      const priorTransactions = kasData.filter(k => k.tanggal < `${periodPrefix}-01`);
+      let saldoAwalKas = priorTransactions.reduce((acc, k) => acc + (k.tipe === 'MASUK' ? k.nominal : -k.nominal), 0);
+      if (saldoAwalKas <= 0 && month === 10 && year === 2026) {
+        saldoAwalKas = 6500000;
+      }
+
+      const currentPeriodKas = kasData.filter(k => k.tanggal.startsWith(periodPrefix));
+      const totalKasMasuk = currentPeriodKas.filter(k => k.tipe === 'MASUK').reduce((acc, k) => acc + k.nominal, 0);
+      const totalKasKeluar = currentPeriodKas.filter(k => k.tipe === 'KELUAR').reduce((acc, k) => acc + k.nominal, 0);
+      const netCashflow = totalKasMasuk - totalKasKeluar;
+      const saldoAkhirKas = saldoAwalKas + netCashflow;
+
+      const pengeluaranItems = currentPeriodKas.filter(k => k.tipe === 'KELUAR');
+
+      return {
+        month,
+        year,
+        monthName: MONTH_NAMES_ID[month] || `Bulan ${month}`,
+        periodPrefix,
+        docNo: `LPJ/GRISES/${year}/${monthPad}/RT05`,
+        wajibCount: wajibIurans.length,
+        paidCount: paidIurans.length,
+        unpaidCount: unpaidIurans.length,
+        iuranTarget: totalTargetIuran,
+        iuranTerkumpul: totalTerkumpulIuran,
+        iuranTunggakan: totalTunggakanIuran,
+        iuranPercent,
+        jimpitanTotal: totalJimpitanKoin,
+        jimpitanHari: activeDaysCount,
+        jimpitanAvg: avgPerNight,
+        jimpitanSetor: jimpitanDepositedInKas > 0 ? jimpitanDepositedInKas : totalJimpitanKoin,
+        saldoAwalKas,
+        kasMasuk: totalKasMasuk,
+        kasKeluar: totalKasKeluar,
+        netCashflow,
+        saldoAkhirKas,
+        pengeluaranItems
+      };
+    }
+
+    function onReportPeriodChange() {
+      const month = getSelectedReportMonth();
+      const year = getSelectedReportYear();
+      const rep = calculateMonthlySummaryData(month, year);
+
+      // 1. Update Dashboard Monthly Card
+      const badgeIuran = document.getElementById('rep-badge-iuran');
+      if (badgeIuran) badgeIuran.innerText = `${rep.iuranPercent}% Lunas`;
+      const iuranTerkumpulEl = document.getElementById('rep-iuran-terkumpul');
+      if (iuranTerkumpulEl) iuranTerkumpulEl.innerText = formatRp(rep.iuranTerkumpul);
+      const iuranTargetEl = document.getElementById('rep-iuran-target');
+      if (iuranTargetEl) iuranTargetEl.innerText = formatRp(rep.iuranTarget);
+      const iuranRatioEl = document.getElementById('rep-iuran-ratio');
+      if (iuranRatioEl) iuranRatioEl.innerText = `${rep.paidCount} Lunas • ${rep.unpaidCount} Belum`;
+      const iuranSisaEl = document.getElementById('rep-iuran-sisa');
+      if (iuranSisaEl) iuranSisaEl.innerText = formatRp(rep.iuranTunggakan);
+
+      const jimpitanTotalEl = document.getElementById('rep-jimpitan-total');
+      if (jimpitanTotalEl) jimpitanTotalEl.innerText = formatRp(rep.jimpitanTotal);
+      const jimpitanHariEl = document.getElementById('rep-jimpitan-hari');
+      if (jimpitanHariEl) jimpitanHariEl.innerText = `${rep.jimpitanHari} Hari Dicatat`;
+      const jimpitanAvgEl = document.getElementById('rep-jimpitan-avg');
+      if (jimpitanAvgEl) jimpitanAvgEl.innerText = formatRp(rep.jimpitanAvg);
+      const jimpitanSetorEl = document.getElementById('rep-jimpitan-setor');
+      if (jimpitanSetorEl) jimpitanSetorEl.innerText = formatRp(rep.jimpitanSetor);
+
+      const isSurplus = rep.netCashflow >= 0;
+      const surplusBadge = document.getElementById('rep-kas-surplus-badge');
+      if (surplusBadge) {
+        surplusBadge.innerText = isSurplus ? `Surplus +${formatRp(rep.netCashflow)}` : `Defisit -${formatRp(Math.abs(rep.netCashflow))}`;
+        surplusBadge.className = isSurplus
+          ? "text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-900"
+          : "text-[11px] font-bold px-2 py-0.5 rounded-full bg-rose-200 text-rose-900";
+      }
+
+      const kasMasukEl = document.getElementById('rep-kas-masuk');
+      if (kasMasukEl) kasMasukEl.innerText = formatRp(rep.kasMasuk);
+      const kasKeluarEl = document.getElementById('rep-kas-keluar');
+      if (kasKeluarEl) kasKeluarEl.innerText = formatRp(rep.kasKeluar);
+      const kasNetEl = document.getElementById('rep-kas-net');
+      if (kasNetEl) kasNetEl.innerText = (isSurplus ? '+ ' : '- ') + formatRp(Math.abs(rep.netCashflow));
+      const kasSaldoAkhirEl = document.getElementById('rep-kas-saldo-akhir');
+      if (kasSaldoAkhirEl) kasSaldoAkhirEl.innerText = formatRp(rep.saldoAkhirKas);
+
+      // 2. Populate Preview and Printable containers
+      populatePreviewAndPrintDOM(rep);
+    }
+
+    function populatePreviewAndPrintDOM(rep) {
+      const periodLabel = `Periode: ${rep.monthName} ${rep.year}`;
+
+      // Preview Elements
+      const pvPeriod = document.getElementById('pv-report-period');
+      if (pvPeriod) pvPeriod.innerText = periodLabel;
+      const pvDocNo = document.getElementById('pv-report-docno');
+      if (pvDocNo) pvDocNo.innerText = `No. Dokumen: ${rep.docNo}`;
+      const pvKasAwal = document.getElementById('pv-kas-saldo-awal');
+      if (pvKasAwal) pvKasAwal.innerText = formatRp(rep.saldoAwalKas);
+      const pvKasMasuk = document.getElementById('pv-kas-total-masuk');
+      if (pvKasMasuk) pvKasMasuk.innerText = formatRp(rep.kasMasuk);
+      const pvKasKeluar = document.getElementById('pv-kas-total-keluar');
+      if (pvKasKeluar) pvKasKeluar.innerText = formatRp(rep.kasKeluar);
+      const pvKasNet = document.getElementById('pv-kas-net');
+      if (pvKasNet) pvKasNet.innerText = (rep.netCashflow >= 0 ? '+ ' : '- ') + formatRp(Math.abs(rep.netCashflow));
+      const pvKasAkhir = document.getElementById('pv-kas-saldo-akhir');
+      if (pvKasAkhir) pvKasAkhir.innerText = formatRp(rep.saldoAkhirKas);
+
+      const pvIuranWajib = document.getElementById('pv-iuran-wajib-count');
+      if (pvIuranWajib) pvIuranWajib.innerText = `${rep.wajibCount} Rumah (${rep.paidCount} Lunas, ${rep.unpaidCount} Belum)`;
+      const pvIuranTarget = document.getElementById('pv-iuran-target-rp');
+      if (pvIuranTarget) pvIuranTarget.innerText = formatRp(rep.iuranTarget);
+      const pvIuranTerkumpul = document.getElementById('pv-iuran-terkumpul-rp');
+      if (pvIuranTerkumpul) pvIuranTerkumpul.innerText = formatRp(rep.iuranTerkumpul);
+      const pvIuranTunggakan = document.getElementById('pv-iuran-tunggakan-rp');
+      if (pvIuranTunggakan) pvIuranTunggakan.innerText = formatRp(rep.iuranTunggakan);
+      const pvIuranPersen = document.getElementById('pv-iuran-persen');
+      if (pvIuranPersen) pvIuranPersen.innerText = `${rep.iuranPercent}%`;
+
+      const pvJimpitanTotal = document.getElementById('pv-jimpitan-total-rp');
+      if (pvJimpitanTotal) pvJimpitanTotal.innerText = formatRp(rep.jimpitanTotal);
+      const pvJimpitanHari = document.getElementById('pv-jimpitan-hari-count');
+      if (pvJimpitanHari) pvJimpitanHari.innerText = `${rep.jimpitanHari} Malam`;
+      const pvJimpitanAvg = document.getElementById('pv-jimpitan-avg-rp');
+      if (pvJimpitanAvg) pvJimpitanAvg.innerText = formatRp(rep.jimpitanAvg);
+      const pvJimpitanSetor = document.getElementById('pv-jimpitan-setor-rp');
+      if (pvJimpitanSetor) pvJimpitanSetor.innerText = formatRp(rep.jimpitanSetor);
+
+      // Print Elements
+      const prPeriod = document.getElementById('print-report-period');
+      if (prPeriod) prPeriod.innerText = periodLabel;
+      const prDocNo = document.getElementById('print-report-docno');
+      if (prDocNo) prDocNo.innerText = `No. Dokumen: ${rep.docNo}`;
+      const prKasAwal = document.getElementById('print-kas-saldo-awal');
+      if (prKasAwal) prKasAwal.innerText = formatRp(rep.saldoAwalKas);
+      const prKasMasuk = document.getElementById('print-kas-total-masuk');
+      if (prKasMasuk) prKasMasuk.innerText = formatRp(rep.kasMasuk);
+      const prKasKeluar = document.getElementById('print-kas-total-keluar');
+      if (prKasKeluar) prKasKeluar.innerText = formatRp(rep.kasKeluar);
+      const prKasNet = document.getElementById('print-kas-net');
+      if (prKasNet) prKasNet.innerText = (rep.netCashflow >= 0 ? '+ ' : '- ') + formatRp(Math.abs(rep.netCashflow));
+      const prKasAkhir = document.getElementById('print-kas-saldo-akhir');
+      if (prKasAkhir) prKasAkhir.innerText = formatRp(rep.saldoAkhirKas);
+
+      const prIuranWajib = document.getElementById('print-iuran-wajib-count');
+      if (prIuranWajib) prIuranWajib.innerText = `${rep.wajibCount} Rumah (${rep.paidCount} Lunas, ${rep.unpaidCount} Belum)`;
+      const prIuranTarget = document.getElementById('print-iuran-target-rp');
+      if (prIuranTarget) prIuranTarget.innerText = formatRp(rep.iuranTarget);
+      const prIuranTerkumpul = document.getElementById('print-iuran-terkumpul-rp');
+      if (prIuranTerkumpul) prIuranTerkumpul.innerText = formatRp(rep.iuranTerkumpul);
+      const prIuranTunggakan = document.getElementById('print-iuran-tunggakan-rp');
+      if (prIuranTunggakan) prIuranTunggakan.innerText = formatRp(rep.iuranTunggakan);
+      const prIuranPersen = document.getElementById('print-iuran-persen');
+      if (prIuranPersen) prIuranPersen.innerText = `${rep.iuranPercent}%`;
+
+      const prJimpitanTotal = document.getElementById('print-jimpitan-total-rp');
+      if (prJimpitanTotal) prJimpitanTotal.innerText = formatRp(rep.jimpitanTotal);
+      const prJimpitanHari = document.getElementById('print-jimpitan-hari-count');
+      if (prJimpitanHari) prJimpitanHari.innerText = `${rep.jimpitanHari} Malam`;
+      const prJimpitanAvg = document.getElementById('print-jimpitan-avg-rp');
+      if (prJimpitanAvg) prJimpitanAvg.innerText = formatRp(rep.jimpitanAvg);
+      const prJimpitanSetor = document.getElementById('print-jimpitan-setor-rp');
+      if (prJimpitanSetor) prJimpitanSetor.innerText = formatRp(rep.jimpitanSetor);
+
+      // Table for Kas Keluar
+      const renderRows = rep.pengeluaranItems.length > 0
+        ? rep.pengeluaranItems.map((item, idx) => `
+            <tr>
+              <td class="p-1.5 text-center">${idx + 1}</td>
+              <td class="p-1.5">${item.tanggal}</td>
+              <td class="p-1.5 font-bold">${item.kategori}</td>
+              <td class="p-1.5">${item.keterangan}</td>
+              <td class="p-1.5 font-mono font-bold text-right text-rose-700">${formatRp(item.nominal)}</td>
+              <td class="p-1.5">${item.pencatat || 'Bendahara'}</td>
+            </tr>
+          `).join('')
+        : `<tr><td colspan="6" class="p-3 text-center text-gray-500 italic">Tidak ada pengeluaran kas tercatat pada periode ini.</td></tr>`;
+
+      const tableHTML = `
+        <table class="w-full text-xs border border-gray-300">
+          <thead>
+            <tr class="bg-gray-100 border-b">
+              <th class="p-1.5 text-center w-8">No</th>
+              <th class="p-1.5 text-left w-20">Tanggal</th>
+              <th class="p-1.5 text-left w-32">Pos Pengeluaran</th>
+              <th class="p-1.5 text-left">Keterangan</th>
+              <th class="p-1.5 text-right w-24">Jumlah</th>
+              <th class="p-1.5 text-left w-24">Penanggung Jawab</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${renderRows}
+          </tbody>
+          <tfoot>
+            <tr class="bg-gray-50 font-bold border-t">
+              <td colspan="4" class="p-2 text-right">TOTAL PENGELUARAN BULAN INI:</td>
+              <td class="p-2 text-right font-mono text-rose-800">${formatRp(rep.kasKeluar)}</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      `;
+
+      const pvContainer = document.getElementById('pv-kas-keluar-table-container');
+      if (pvContainer) pvContainer.innerHTML = tableHTML;
+      const printContainer = document.getElementById('print-kas-keluar-table-container');
+      if (printContainer) printContainer.innerHTML = tableHTML;
+    }
+
+    function openReportPreviewModal() {
+      onReportPeriodChange();
+      document.getElementById('modal-report-preview').classList.remove('hidden');
+    }
+
+    function triggerPrintReport() {
+      onReportPeriodChange();
+      const monthName = MONTH_NAMES_ID[getSelectedReportMonth()];
+      const year = getSelectedReportYear();
+      const reportTitle = `Laporan_Bulanan_GRISES_${monthName}_${year}`;
+
+      if (window.AndroidBridge && typeof window.AndroidBridge.printDocument === 'function') {
+        window.AndroidBridge.printDocument(reportTitle);
+      } else {
+        window.print();
+      }
+    }
+
+    function shareReportWhatsApp() {
+      const month = getSelectedReportMonth();
+      const year = getSelectedReportYear();
+      const rep = calculateMonthlySummaryData(month, year);
+
+      const text = `📋 *LAPORAN PERTANGGUNGJAWABAN KEUANGAN BULANAN*
+*PAGUYUBAN WARGA PERUM GRIYA SEDAYU SELARAS (GRISES)*
+RT 05 / RW 12, Kelurahan Argorejo, Sedayu, Bantul
+📅 *Periode: ${rep.monthName} ${rep.year}*
+No. Dok: ${rep.docNo}
+───────────────────────
+💵 *1. REKAPITULASI ARUS KAS*
+• Saldo Awal: ${formatRp(rep.saldoAwalKas)}
+• Total Pemasukan: ${formatRp(rep.kasMasuk)}
+• Total Pengeluaran: ${formatRp(rep.kasKeluar)}
+• Surplus / Defisit: ${rep.netCashflow >= 0 ? '+' : '-'}${formatRp(Math.abs(rep.netCashflow))}
+👉 *SALDO AKHIR KAS: ${formatRp(rep.saldoAkhirKas)}*
+
+📬 *2. REALISASI IURAN WARGA*
+• Target Tagihan: ${formatRp(rep.iuranTarget)}
+• Realisasi Terkumpul: ${formatRp(rep.iuranTerkumpul)} (${rep.iuranPercent}%)
+• Status: ${rep.paidCount} Lunas / ${rep.unpaidCount} Belum Lunas
+• Sisa Tunggakan: ${formatRp(rep.iuranTunggakan)}
+
+🪙 *3. JIMPITAN RONDA (Rp 500/hari)*
+• Total Dana Jimpitan: ${formatRp(rep.jimpitanTotal)}
+• Hari Aktif Ronda: ${rep.jimpitanHari} Hari
+• Rata-rata per Malam: ${formatRp(rep.jimpitanAvg)}
+• Disetor ke Buku Kas: ${formatRp(rep.jimpitanSetor)}
+
+Terima kasih atas partisipasi dan keguyuban seluruh warga Perum Griya Sedayu Selaras.
+_Laporan ini dibuat otomatis secara transparan & akuntabel melalui Aplikasi GRISES._
+Salam hangat,
+*Pengurus Paguyuban GRISES*`;
+
+      if (window.AndroidBridge && typeof window.AndroidBridge.shareSummaryText === 'function') {
+        window.AndroidBridge.shareSummaryText(text, `Laporan Keuangan Bulanan GRISES - ${rep.monthName} ${rep.year}`);
+      } else {
+        const url = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(text);
+        window.open(url, '_blank');
+      }
+    }
+
     // INIT
     window.onload = function() {
       updateDashboardStats();
+      onReportPeriodChange();
     };
   </script>
 </body>

@@ -1,12 +1,18 @@
 package com.example.ui.screens
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.print.PrintAttributes
+import android.print.PrintManager
+import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +30,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Apps
+import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.FilledTonalButton
@@ -128,6 +135,23 @@ fun WebDashboardScreen(
         }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
+          // Cetak / PDF Button
+          IconButton(
+            onClick = {
+              webViewInstance?.evaluateJavascript("if (typeof triggerPrintReport === 'function') { triggerPrintReport(); } else { window.print(); }", null)
+            },
+            modifier = Modifier
+              .size(34.dp)
+              .testTag("web_quick_print_btn")
+          ) {
+            Icon(
+              imageVector = Icons.Default.Print,
+              contentDescription = "Cetak / Simpan PDF",
+              tint = Color.White,
+              modifier = Modifier.size(18.dp)
+            )
+          }
+
           // Reload button
           IconButton(
             onClick = { webViewInstance?.reload() },
@@ -197,6 +221,12 @@ fun WebDashboardScreen(
 
             webChromeClient = WebChromeClient()
 
+            // Expose Native Android Print and Share APIs to JavaScript
+            addJavascriptInterface(
+              AndroidPrintBridge(context) { webViewInstance ?: this },
+              "AndroidBridge"
+            )
+
             webViewClient = object : WebViewClient() {
               override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
@@ -234,6 +264,49 @@ fun WebDashboardScreen(
         },
         modifier = Modifier.fillMaxSize()
       )
+    }
+  }
+}
+
+/**
+ * JavaScript Interface bridge to connect WebView with native Android PrintManager
+ * and system share intent (WhatsApp, Email, etc.)
+ */
+class AndroidPrintBridge(
+  private val context: Context,
+  private val webViewProvider: () -> WebView?
+) {
+  @JavascriptInterface
+  fun printDocument(title: String) {
+    (context as? ComponentActivity)?.runOnUiThread {
+      val webView = webViewProvider() ?: return@runOnUiThread
+      val printManager = context.getSystemService(Context.PRINT_SERVICE) as? PrintManager
+      if (printManager != null) {
+        val printAdapter = webView.createPrintDocumentAdapter(title)
+        val cleanJobName = title.replace("[^a-zA-Z0-9_-]".toRegex(), "_")
+        printManager.print(cleanJobName, printAdapter, PrintAttributes.Builder().build())
+      } else {
+        Toast.makeText(context, "Layanan cetak tidak tersedia di perangkat ini", Toast.LENGTH_SHORT).show()
+      }
+    }
+  }
+
+  @JavascriptInterface
+  fun shareSummaryText(text: String, title: String) {
+    (context as? ComponentActivity)?.runOnUiThread {
+      try {
+        val sendIntent = Intent().apply {
+          action = Intent.ACTION_SEND
+          putExtra(Intent.EXTRA_TEXT, text)
+          putExtra(Intent.EXTRA_SUBJECT, title)
+          type = "text/plain"
+        }
+        val shareIntent = Intent.createChooser(sendIntent, title)
+        shareIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        context.startActivity(shareIntent)
+      } catch (e: Exception) {
+        Toast.makeText(context, "Gagal membagikan laporan: ${e.message}", Toast.LENGTH_SHORT).show()
+      }
     }
   }
 }
