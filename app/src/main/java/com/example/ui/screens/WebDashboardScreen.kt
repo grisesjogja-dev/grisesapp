@@ -30,6 +30,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Apps
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Refresh
@@ -57,7 +58,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 @Composable
 fun WebDashboardScreen(
   modifier: Modifier = Modifier,
-  onSwitchToNative: (() -> Unit)? = null
+  onSwitchToNative: (() -> Unit)? = null,
+  onOpenTab: ((Int) -> Unit)? = null
 ) {
   var webViewInstance by remember { mutableStateOf<WebView?>(null) }
   var canGoBackState by remember { mutableStateOf(false) }
@@ -167,6 +169,23 @@ fun WebDashboardScreen(
             )
           }
 
+          // Gemini AI Assistant Button
+          if (onOpenTab != null) {
+            IconButton(
+              onClick = { onOpenTab(1) },
+              modifier = Modifier
+                .size(34.dp)
+                .testTag("web_open_ai_btn")
+            ) {
+              Icon(
+                imageVector = Icons.Default.AutoAwesome,
+                contentDescription = "Asisten AI Gemini",
+                tint = Color(0xFFFDE047),
+                modifier = Modifier.size(19.dp)
+              )
+            }
+          }
+
           // Switch to Native App Button
           if (onSwitchToNative != null) {
             Spacer(modifier = Modifier.width(4.dp))
@@ -221,9 +240,13 @@ fun WebDashboardScreen(
 
             webChromeClient = WebChromeClient()
 
-            // Expose Native Android Print and Share APIs to JavaScript
+            // Expose Native Android Print, Share, and AI Navigation APIs to JavaScript
             addJavascriptInterface(
-              AndroidPrintBridge(context) { webViewInstance ?: this },
+              AndroidPrintBridge(
+                context = context,
+                webViewProvider = { webViewInstance ?: this },
+                onOpenTab = onOpenTab
+              ),
               "AndroidBridge"
             )
 
@@ -274,7 +297,8 @@ fun WebDashboardScreen(
  */
 class AndroidPrintBridge(
   private val context: Context,
-  private val webViewProvider: () -> WebView?
+  private val webViewProvider: () -> WebView?,
+  private val onOpenTab: ((Int) -> Unit)? = null
 ) {
   @JavascriptInterface
   fun printDocument(title: String) {
@@ -307,6 +331,20 @@ class AndroidPrintBridge(
       } catch (e: Exception) {
         Toast.makeText(context, "Gagal membagikan laporan: ${e.message}", Toast.LENGTH_SHORT).show()
       }
+    }
+  }
+
+  @JavascriptInterface
+  fun openAiAssistant() {
+    (context as? ComponentActivity)?.runOnUiThread {
+      onOpenTab?.invoke(1) // 1 is Asisten AI
+    }
+  }
+
+  @JavascriptInterface
+  fun openNativeTab(tabIndex: Int) {
+    (context as? ComponentActivity)?.runOnUiThread {
+      onOpenTab?.invoke(tabIndex)
     }
   }
 }

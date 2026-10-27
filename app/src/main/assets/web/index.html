@@ -148,6 +148,9 @@
         <button onclick="switchTab('agenda')" id="nav-agenda" class="nav-tab px-3 py-1.5 rounded-lg font-medium text-emerald-100 hover:bg-emerald-800/60 flex items-center gap-1.5 whitespace-nowrap">
           <i class="fa-solid fa-calendar-days"></i> Agenda
         </button>
+        <button onclick="openModalAiInfo()" id="nav-ai" class="nav-tab px-3 py-1.5 rounded-lg font-medium text-amber-200 hover:bg-emerald-800/60 flex items-center gap-1.5 whitespace-nowrap bg-emerald-900/60 border border-amber-400/50 shadow-sm">
+          <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i> Asisten AI
+        </button>
       </nav>
     </div>
   </header>
@@ -246,7 +249,7 @@
         <h3 class="font-bold text-gray-900 text-base mb-4 flex items-center gap-2">
           <i class="fa-solid fa-bolt text-amber-500"></i> Aksi Cepat Administrasi
         </h3>
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-3">
+        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-8 gap-3">
           <button onclick="switchTab('iuran')" class="p-3.5 rounded-xl border border-gray-200 hover:border-emerald-500 hover:bg-emerald-50/50 transition flex flex-col items-center text-center">
             <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mb-2">
               <i class="fa-brands fa-whatsapp text-xl"></i>
@@ -301,6 +304,14 @@
             </div>
             <span class="font-bold text-xs text-emerald-900">Cetak Laporan</span>
             <span class="text-[10px] text-emerald-700">PDF bulanan</span>
+          </button>
+
+          <button onclick="openModalAiInfo()" class="p-3.5 rounded-xl border border-amber-300 bg-gradient-to-b from-amber-50/80 to-amber-100/40 hover:border-amber-500 hover:shadow transition flex flex-col items-center text-center">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 to-yellow-400 text-white flex items-center justify-center mb-2 shadow-sm">
+              <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
+            </div>
+            <span class="font-bold text-xs text-amber-950">Asisten AI</span>
+            <span class="text-[10px] text-amber-700 font-semibold">Gemini Flash</span>
           </button>
         </div>
       </div>
@@ -1035,6 +1046,91 @@
               <p class="text-[10px] text-gray-500">Bendahara</p>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ASISTEN AI GEMINI INFO & LAUNCH -->
+  <div id="modal-ai-info" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-amber-200 overflow-hidden">
+      <div class="px-5 py-4 bg-gradient-to-r from-amber-600 via-amber-700 to-yellow-600 text-white flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center">
+            <i class="fa-solid fa-wand-magic-sparkles text-yellow-300 text-lg"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-base">Asisten AI Gemini 3.8 Flash</h3>
+            <p class="text-[11px] text-amber-200">Paguyuban Perum Griya Sedayu Selaras</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-ai-info')" class="text-white/80 hover:text-white p-1">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="p-5 sm:p-6 space-y-4 text-sm text-gray-700">
+        <!-- Status Box -->
+        <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-start gap-3">
+          <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <i class="fa-solid fa-shield-halved text-sm"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-xs text-emerald-900">Status Autentikasi: Aktif & Aman</span>
+              <span class="px-1.5 py-0.5 rounded bg-emerald-200 text-emerald-800 text-[10px] font-bold">Firebase AI Logic</span>
+            </div>
+            <p class="text-[11px] text-emerald-700 mt-1 leading-relaxed">
+              Model <strong>Gemini 3.8 Flash</strong> terhubung ke cloud project <code>gen-lang-client-0375999423</code> via Firebase App Check. <strong>Tidak memerlukan input API Key manual</strong> di sisi klien sehingga aman dari risiko kebocoran key pada APK.
+            </p>
+          </div>
+        </div>
+
+        <!-- Capability Cards -->
+        <div>
+          <h4 class="font-bold text-xs text-gray-900 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+            <i class="fa-solid fa-sparkles text-amber-500"></i> Fitur AI Pintar Siap Pakai
+          </h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+            <div class="p-2.5 rounded-lg border border-gray-200 bg-gray-50 flex items-start gap-2">
+              <i class="fa-solid fa-comments text-amber-600 mt-0.5"></i>
+              <div>
+                <p class="font-bold text-gray-800">Tanya AI Warga</p>
+                <p class="text-[11px] text-gray-500">Konsultasi aturan RT, ronda, & peminjaman inventaris.</p>
+              </div>
+            </div>
+            <div class="p-2.5 rounded-lg border border-gray-200 bg-gray-50 flex items-start gap-2">
+              <i class="fa-solid fa-file-pen text-blue-600 mt-0.5"></i>
+              <div>
+                <p class="font-bold text-gray-800">Surat Edaran Otomatis</p>
+                <p class="text-[11px] text-gray-500">Draf pengumuman kerja bakti & arisan santun.</p>
+              </div>
+            </div>
+            <div class="p-2.5 rounded-lg border border-gray-200 bg-gray-50 flex items-start gap-2">
+              <i class="fa-brands fa-whatsapp text-emerald-600 mt-0.5"></i>
+              <div>
+                <p class="font-bold text-gray-800">Draf Tagihan WA Santun</p>
+                <p class="text-[11px] text-gray-500">Pesan penagihan iuran ramah & kekeluargaan.</p>
+              </div>
+            </div>
+            <div class="p-2.5 rounded-lg border border-gray-200 bg-gray-50 flex items-start gap-2">
+              <i class="fa-solid fa-chart-line text-purple-600 mt-0.5"></i>
+              <div>
+                <p class="font-bold text-gray-800">Audit & Analisis Kas</p>
+                <p class="text-[11px] text-gray-500">Evaluasi kesehatan saldo kas & jimpitan harian.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Launch Button -->
+        <div class="pt-2 flex flex-col gap-2">
+          <button onclick="launchNativeAi()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-sm shadow-md flex items-center justify-center gap-2 transition">
+            <i class="fa-solid fa-wand-magic-sparkles text-yellow-300"></i> Buka Layar Asisten AI (Native)
+          </button>
+          <button onclick="closeModal('modal-ai-info')" class="w-full py-2 px-4 rounded-xl border border-gray-300 text-gray-700 text-xs font-semibold hover:bg-gray-50 transition">
+            Tutup
+          </button>
         </div>
       </div>
     </div>
@@ -2305,6 +2401,21 @@ Salam hangat,
       } else {
         const url = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(text);
         window.open(url, '_blank');
+      }
+    }
+
+    function openModalAiInfo() {
+      document.getElementById('modal-ai-info').classList.remove('hidden');
+    }
+
+    function launchNativeAi() {
+      closeModal('modal-ai-info');
+      if (window.AndroidBridge && typeof window.AndroidBridge.openAiAssistant === 'function') {
+        window.AndroidBridge.openAiAssistant();
+      } else if (window.AndroidBridge && typeof window.AndroidBridge.openNativeTab === 'function') {
+        window.AndroidBridge.openNativeTab(1);
+      } else {
+        alert("Silakan klik tombol 'Ke Native' di bagian atas aplikasi lalu pilih tab 'Asisten AI'.");
       }
     }
 

@@ -111,7 +111,11 @@ fun MainAppContent(viewModel: GrisesViewModel = viewModel()) {
 
   if (isWebModeActive) {
     WebDashboardScreen(
-      onSwitchToNative = { isWebModeActive = false }
+      onSwitchToNative = { isWebModeActive = false },
+      onOpenTab = { tab ->
+        currentTab = tab
+        isWebModeActive = false
+      }
     )
     return
   }
